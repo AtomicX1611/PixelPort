@@ -1,0 +1,9 @@
+.card {
+    margin: 0;
+    box-shadow: whitesmoke;
+    border-color: red;
+    border-radius: 6px;
+    overflow: hidden;
+    background: white;
+    color: white;
+  }

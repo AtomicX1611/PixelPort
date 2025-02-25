@@ -1,0 +1,29 @@
+.card {
+  background-color: white;
+  border: 2px solid red;
+  border-radius: 18px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+}
+
+.card_content {
+  color: rgb(84, 63, 63);
+  width: 150px;
+  height: 100px;
+  margin-top: 0px;
+  margin-left: 15px;
+}
+
+.card_content a {
+  text-decoration: none;
+  color: inherit; 
+}
+
+.card_content h3 {
+  margin: 0;
+  padding: 0;
+}
+
+img{
+  object-fit: cover;
+}

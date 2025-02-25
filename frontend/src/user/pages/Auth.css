@@ -1,0 +1,18 @@
+.auth-card{
+    display: block;
+    border-radius: 6px;
+    padding-left: 5px;
+    margin: 0 auto;
+    padding: 1rem;
+    max-width: 40rem;
+}
+
+h2{
+    text-align: center;
+}
+
+.customButton{
+    display: block;
+    margin : auto;
+    margin-top: 12px;
+}
