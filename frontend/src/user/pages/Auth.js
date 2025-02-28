@@ -10,14 +10,13 @@ import { useForm } from "../../shared/hooks/form-hook.js";
 import Input from "../../shared/components/FormElements/Input";
 import ErrorModal from "../../shared/components/UiElements/ErrorModal.js";
 import LoadingSpinner from "../../shared/components/UiElements/LoadingSpinner.js";
-import httpClient from "../../shared/hooks/http-hook.js";
-   
+import useHttpClient from "../../shared/hooks/http-hook.js";
+
 const Auth = () => {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
   const [isLogin, setisLogin] = useState(false);
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { loading, error, sendRequest, clearError } = useHttpClient();
 
   const [formState, InputHandler, setFormState] = useForm({
     email: {
@@ -34,69 +33,46 @@ const Auth = () => {
     event.preventDefault();
     console.log("FormState : ", formState.inputs);
     if (!formState.inputs.email.value || !formState.inputs.password.value) {
-      setError("Email and Password cannot be empty");
+      error.message = "Email and Password cannot be empty";
       return;
     }
-
+    
     let response;
     if (isLogin) {
       try {
-        setIsLoading(true);
-
-        const data = httpClient({
-          method : "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body : JSON.stringify({
-            email : formState.inputs.name.value,
-            password: formState.inputs.password.value,
-          })
-        })
-
-        if(data.ok){
-          throw new Error(data.message)
-        }
-
-        console.log(data);
-        auth.login();
-        navigate("/");
-      } catch (err) {
-        console.log("Something went wrong");
-        setError(err);
-      }
-      setIsLoading(false);
-    } else {
-      try {
-        setIsLoading(true);
-        response = await fetch("http://localhost:5000/api/users/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: formState.inputs.name.value,
+       response = await sendRequest(
+          "http://localhost:5000/api/users/login",
+          "POST",
+          JSON.stringify({
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
           }),
-        });
-
-        if (response.ok) {
-          throw new Error(response.message);
-        }
-        const responseData = await response.json();
-        console.log("Response:", responseData);
-        setIsLoading(false);
+          {
+            "Content-Type": "application/json",
+          }
+        );
+        auth.login(response.user.id);
+        navigate("/");
+      } catch (error) {}
+    } else {
+      try {
+        response = await sendRequest(
+          "http://localhost:5000/api/users/signup",
+          "POST",
+          JSON.stringify({
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value,
+            name: formState.inputs.name.value,
+          }),
+          {
+            "Content-Type": "application/json",
+          }
+        );
         auth.login();
         navigate("/");
-      } catch (err) {
-        console.log(err);
-        setIsLoading(false);
-        setError(err.message || "Something went wrong");
-      }
+      } catch (err) {}
     }
   };
-
   const switchModeHandler = () => {
     if (isLogin) {
       setFormState({
@@ -118,15 +94,11 @@ const Auth = () => {
     setisLogin((prev) => !prev);
   };
 
-  const errorHandler = () => {
-    setError(null);
-  };
-
   return (
     <React.Fragment>
-      <ErrorModal error={error} onClear={errorHandler} />
+      <ErrorModal error={error} onClear={clearError} />
       <Card className="auth-card">
-        {isLoading && <LoadingSpinner asOverlay />}
+        {loading && <LoadingSpinner asOverlay />}
         <h2>{isLogin ? "LOGIN" : "SIGNUP"}</h2>
         {!isLogin && (
           <Input

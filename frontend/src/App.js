@@ -17,14 +17,17 @@ import { AuthContext } from "./context/AuthContext.js";
 
 const App = () => {
   const [isLoggedIn, setisLogin] = useState(false);
+  const [userId,setuserId] = useState(null)
   let routes;
 
-  const login = useCallback(() => {
+  const login = useCallback((user_id) => {
     setisLogin(true);
+    setuserId(user_id)
   }, []);
 
   const logout = useCallback(() => {
     setisLogin(false);
+    setuserId(null)
   }, []);
 
   if (isLoggedIn) {
@@ -43,13 +46,14 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Users />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/:userId/places" exact element={<UserPlaces />} />
       </Routes>
     );
   }
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn: isLoggedIn, login: login, logout: logout }}
+      value={{ isLoggedIn: isLoggedIn, login: login, logout: logout,userId : userId }}
     >
       <BrowserRouter>
         <MainNavigation />

@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import Card from "../../shared/components/UiElements/Card";
 import PlaceItem from "./PlaceItem"; 
 import "./PLaceList.css";
+import { AuthContext } from "../../context/AuthContext";
 
 const PlaceList = ({ list }) => {
+
+  const auth = useContext(AuthContext)
   
   if (list.length === 0) {
     return (

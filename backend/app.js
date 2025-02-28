@@ -9,6 +9,7 @@ const app = express();
 
 app.use(bodyParser.json());
 
+//cors might be better 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(

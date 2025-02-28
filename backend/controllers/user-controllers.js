@@ -62,7 +62,7 @@ const loginUser = async (req, res, next) => {
    }
 
    console.log("User accessed : ",user)
-   res.json({message : "User logged in"})
+   res.json({message : "User logged in",user})
 };
 
 export { getAllUsers, signUpUser, loginUser };

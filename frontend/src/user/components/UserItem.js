@@ -6,7 +6,7 @@ const UserItem = (user) => {
   return (
     <div className="card">
       <div className="card_content">
-        <Link to={`/${user._id}/places`}>
+        <Link to={`/${user.id}/places`}>
           <h3>{user.name}</h3>
           <h3>Places : {user.places}</h3>
         </Link>
