@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const placeSchema = new Schema({
-  pid : {type : String , require : true},
+  pid : {type : String , required : true},
   title: { type: String, require: true },
   desc : {type : String,required : true},
   imageUrl :{type : String,required : true},

@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import Place from "../model/place.js";
 import User from "../model/user.js";
-import { getAllUsers } from "./user-controllers.js";
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
@@ -39,7 +38,7 @@ const getPlacesByUserId = async (req, res, next) => {
 
 const createPlace = async (req, res, next) => {
   const { pid, title, desc, address, creatorID, imageUrl, location } = req.body;
-
+  console.log("Creating Place called")
   const createdPlace = new Place({
     pid,
     title,
@@ -57,15 +56,16 @@ const createPlace = async (req, res, next) => {
     const error = new Error("Could not find user with given id");
     return next(error);
   }
-
+  console.log("Found user")
   try {
     const sess = await mongoose.startSession();
-    sess.startTransaction();
+    await sess.startTransaction();
     await createdPlace.save({ session: sess });
     user.places.push(createdPlace);
     await user.save({ session: sess });
     await sess.commitTransaction();
-  } catch {
+  } catch(error){
+    console.log(error.message)
     const err = new Error("Error occurred");
     return next(err);
   }

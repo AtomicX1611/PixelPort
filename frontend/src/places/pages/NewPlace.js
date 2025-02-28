@@ -1,16 +1,17 @@
 import Input from "../../shared/components/FormElements/Input.js";
 import Button from "../../shared/components/UiElements/Button.js";
-
+import React from "react";
 import "./NewPlace.css";
 import { useForm } from "../../shared/hooks/form-hook.js";
 import { VALIDATOR_REQUIRE } from "../../shared/utils/validator.js";
 import useHttpClient from "../../shared/hooks/http-hook.js";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext.js";
+import ErrorModal from "../../shared/components/UiElements/ErrorModal.js";
 
 const NewPlace = () => {
-  const authContext = useContext(AuthContext)
-  const { loading,sendRequest,error,clearError } = useHttpClient();
+  const authContext = useContext(AuthContext);
+  const { loading, sendRequest, error, clearError } = useHttpClient();
   const [formState, InputHandler] = useForm({
     title: {
       value: "",
@@ -25,46 +26,57 @@ const NewPlace = () => {
   const AddPlaceHandler = async (event) => {
     event.preventDefault();
     try {
+      console.log("Sending Request,");
+      console.log(formState.inputs);
       await sendRequest(
-        "http://localhost:3000/api/places/",
+        "http://localhost:5000/api/places/",
         "POST",
         JSON.stringify({
           pid: "u1",
-          title: formState.inputs.title.value,
-          desc: formState.inputs.desc.value,
+          title: formState.inputs.Title.value,
+          desc: formState.inputs.Description.value,
           address: "address",
           creatorID: authContext.userId,
           imageUrl: "url",
-          location: "location",
-        })
+          location: {
+            lng : "11",
+            lat : "122"
+          },
+        }),
+        {
+          "Content-Type": "application/json",
+        }
       );
     } catch (error) {
-      console.log("Couldnt add place...")
+      console.log("Couldnt add place, ", error);
     }
   };
 
   return (
-    <form className="place-form" onSubmit={AddPlaceHandler}>
-      <Input
-        id="Title"
-        element="input"
-        type="text"
-        label="Title"
-        error="Please enter valid text"
-        validators={[VALIDATOR_REQUIRE()]}
-        onInput={InputHandler}
-      />
-      <Input
-        id="Description"
-        element="input"
-        type="text"
-        label="Description"
-        validators={[VALIDATOR_REQUIRE()]}
-        error="Please enter valid Description"
-        onInput={InputHandler}
-      />
-      <Button type="submit">ADD PLACE</Button>
-    </form>
+    <React.Fragment>
+      <ErrorModal error={error} onClear={clearError} />
+      <form className="place-form" onSubmit={AddPlaceHandler}>
+        <Input
+          id="Title"
+          element="input"
+          type="text"
+          label="Title"
+          error="Please enter valid text"
+          validators={[VALIDATOR_REQUIRE()]}
+          onInput={InputHandler}
+        />
+        <Input
+          id="Description"
+          element="input"
+          type="text"
+          label="Description"
+          validators={[VALIDATOR_REQUIRE()]}
+          error="Please enter valid Description"
+          onInput={InputHandler}
+        />
+        <Button type="submit">ADD PLACE</Button>
+      </form>
+    </React.Fragment>
   );
 };
 

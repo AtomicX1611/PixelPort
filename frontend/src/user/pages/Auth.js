@@ -51,7 +51,7 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.login(response.user.id);
+        auth.login(response.user._id);
         navigate("/");
       } catch (error) {}
     } else {
@@ -68,7 +68,7 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.login();
+        auth.login(response.user._id);
         navigate("/");
       } catch (err) {}
     }
