@@ -39,3 +39,7 @@
   border-color: red;
   background: #ffd1d1;
 }
+
+textarea {
+  resize: none;
+}

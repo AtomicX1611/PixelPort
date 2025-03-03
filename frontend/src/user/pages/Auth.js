@@ -127,11 +127,11 @@ const Auth = () => {
             onInput={InputHandler}
             validators={[VALIDATOR_REQUIRE()]}
           />
-          <Button type="submit" className="customButton">
+          <Button type="submit" className="customButton"   disabled={!formState.isValid}>
             {isLogin ? "LOGIN" : "SIGNUP"}
           </Button>
         </form>
-        <Button inverse onClick={switchModeHandler} className="customButton">
+        <Button inverse onClick={switchModeHandler} className="customButton" >
           SWITCH TO {!isLogin ? "LOGIN" : "SIGNUP"}
         </Button>
       </Card>

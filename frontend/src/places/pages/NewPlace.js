@@ -24,6 +24,7 @@ const NewPlace = () => {
   });
 
   const AddPlaceHandler = async (event) => {
+    //Check Validity Here
     event.preventDefault();
     try {
       console.log("Sending Request,");
@@ -35,15 +36,15 @@ const NewPlace = () => {
           pid: "u1",
           title: formState.inputs.Title.value,
           desc: formState.inputs.Description.value,
-          address: "address",
+          address: formState.inputs.address.value,
           creatorID: authContext.userId,
-          imageUrl: "url",
+          imageUrl: formState.inputs.imageUrl.value,
           location: {
             lng : "11",
             lat : "122"
           },
         }),
-        {
+        { 
           "Content-Type": "application/json",
         }
       );
@@ -67,11 +68,29 @@ const NewPlace = () => {
         />
         <Input
           id="Description"
-          element="input"
+          element="desc"
           type="text"
-          label="Description"
+          label="Description" 
           validators={[VALIDATOR_REQUIRE()]}
           error="Please enter valid Description"
+          onInput={InputHandler}
+        />
+          <Input
+          id="Address"
+          element="input"
+          type="text"
+          label="Address" 
+          validators={[VALIDATOR_REQUIRE()]}
+          error="Please enter valid Address"
+          onInput={InputHandler}
+        />
+         <Input
+          id="ImageUrl"
+          element="input"
+          type="text"
+          label="ImageUrl" 
+          validators={[VALIDATOR_REQUIRE()]}
+          error="Please give valid url"
           onInput={InputHandler}
         />
         <Button type="submit">ADD PLACE</Button>

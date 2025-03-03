@@ -21,7 +21,7 @@ const NavLinks = () => {
       </li>
       {auth.isLoggedIn && (
         <li>
-          <Link to="/u1/places">My Places</Link>
+          <Link to={`/${auth.userId}/places`}>My Places</Link>
         </li>
       )}
       {auth.isLoggedIn && (
