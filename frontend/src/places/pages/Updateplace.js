@@ -1,8 +1,16 @@
-import React, { Suspense, useCallback, useEffect } from "react";
+import React, {
+  Suspense,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import Input from "../../shared/components/FormElements/Input";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../shared/components/UiElements/Button";
 import { useForm } from "../../shared/hooks/form-hook";
+import useHttpClient from "../../shared/hooks/http-hook.js";
+import { AuthContext } from "../../context/AuthContext.js";
 
 const DUMMY_PLACES = [
   {
@@ -34,73 +42,99 @@ const DUMMY_PLACES = [
 ];
 
 const UpdatePlace = () => {
-  const placeId = useParams().pid; 
-  
-  const [formState,InputHandler,setFormState] = useForm({
-      title : {
-      value : ""
+  const placeId = useParams().pid;
+  const navigate = useNavigate();
+  const auth = useContext(AuthContext);
+  console.log("Place ID:", placeId);
+
+  const [place, setPlace] = useState();
+
+  const [formState, InputHandler, setFormState] = useForm({
+    title: {
+      value: "",
+      isValid: false,
     },
-    description : {
-      value : ""
-    }
-  })
-
-
-  const checkPlace = DUMMY_PLACES.find((place) => {
-    return place.id === placeId;
+    description: {
+      value: "",
+      isValid: false,
+    },
   });
 
-  useEffect(() => {
-    setFormState({
-      title : {
-        value : checkPlace.title
-      },
-      description : {
-        value : checkPlace.desc
-      }
-    })
-  },[setFormState,checkPlace])
+  const { loading, error, sendRequest, clearError } = useHttpClient();
 
-  if (!checkPlace) {
+  useEffect(() => {
+    console.log("Sending Req");
+    const fetchPlace = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/places/${placeId}`
+        );
+        console.log("Loggin Data : ", responseData.message);
+        setFormState({
+          title: {
+            value: responseData.message.title,
+          },
+          description: {
+            value: responseData.message.desc,
+          },
+        });
+        setPlace(responseData.message);
+      } catch (error) {}
+    };
+    fetchPlace();
+  }, [sendRequest, placeId, setFormState]);
+
+  if (!place) {
     return <h2>No Place Found.Maybe Add one?</h2>;
   }
 
-  console.log("Rendered + ",formState.inputs.description.value)
-
-  if(!formState.inputs.title.value){
-    return(
-      <div>
-        <h2>
-          Loading...
-        </h2>
-      </div>
-    )
-  }
-
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-  }
-  
+    try {
+      console.log("Sending Request")
+      await sendRequest(
+        `http://localhost:5000/api/places/${placeId}`,
+        "PATCH",
+        JSON.stringify({
+          title: formState.inputs.title.value,
+          desc: formState.inputs.description.value,
+        }),
+        {
+          "Content-Type": "application/json",
+        }
+      );
+      navigate("/" + auth.userId + "/places");
+    } catch (error) {
+      console.log("Error occurred : ", error);
+    }
+  };
+
   return (
-    <form className="form-place" onSubmit={submitHandler}>
-      <Input
-        id="title"
-        element="input"
-        onInput={InputHandler}
-        label="Title"
-        type="text"
-        value={formState.inputs.title.value}
-      ></Input>
-      <Input
-        id="desc"
-        element="input"
-        onInput={InputHandler}
-        label="Description"
-        type="text"
-        value={formState.inputs.description.value}
-      ></Input>
-      <Button type="submit">UPDATE PLACE</Button>
-    </form>
+    <React.Fragment>
+      {place && (
+        <form className="form-place" onSubmit={submitHandler}>
+          <Input
+            id="title"
+            element="input"
+            onInput={InputHandler}
+            label="Title"
+            type="text"
+            value={place.title}
+            validators={[]}
+          ></Input>
+          <Input
+            id="desc"
+            element="input"
+            onInput={InputHandler}
+            label="Description"
+            type="text"
+            value={place.desc}
+            validators={[]}
+          ></Input>
+          <Button type="submit">UPDATE PLACE</Button>
+        </form>
+      )}
+    </React.Fragment>
   );
 };
 

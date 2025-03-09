@@ -4,7 +4,6 @@ import User from "../model/user.js";
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
-
   let place;
   try {
     place = await Place.findById(placeId);
@@ -76,7 +75,8 @@ const createPlace = async (req, res, next) => {
 const updatePlace = async (req, res, next) => {
   const placeID = req.params.pid;
   const { title, desc } = req.body;
-
+  
+  console.log("Updating Place")
   let place;
   try {
     place = await Place.findById(placeID);
@@ -90,8 +90,10 @@ const updatePlace = async (req, res, next) => {
 
   try {
     await place.save();
-  } catch {
+    console.log("Updating Place done")
+  } catch(err){
     const error = new Error("Could not save place");
+    console.log("Error Occurred : ",err)
     return next(error);
   }
 

@@ -11,6 +11,7 @@ import Input from "../../shared/components/FormElements/Input";
 import ErrorModal from "../../shared/components/UiElements/ErrorModal.js";
 import LoadingSpinner from "../../shared/components/UiElements/LoadingSpinner.js";
 import useHttpClient from "../../shared/hooks/http-hook.js";
+import ImageUplaod from "../../shared/components/FormElements/ImageUpload.js";
 
 const Auth = () => {
   const auth = useContext(AuthContext);
@@ -119,6 +120,7 @@ const Auth = () => {
             onInput={InputHandler}
             validators={[VALIDATOR_REQUIRE()]}
           />
+          {!isLogin && <ImageUplaod center id="image"/>}
           <Input
             id="password"
             type="text"

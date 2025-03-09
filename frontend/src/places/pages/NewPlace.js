@@ -87,10 +87,10 @@ const NewPlace = () => {
          <Input
           id="ImageUrl"
           element="input"
-          type="text"
-          label="ImageUrl" 
+          type="file"
+          label="Image" 
           validators={[VALIDATOR_REQUIRE()]}
-          error="Please give valid url"
+          error="Please upload a valid image"
           onInput={InputHandler}
         />
         <Button type="submit">ADD PLACE</Button>

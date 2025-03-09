@@ -9,7 +9,6 @@ import GMap from "../../shared/components/UiElements/Map.js";
 
 const PlaceItem = (props) => {
   const [gMap, setGMap] = useState(false);
-
   const closeMap = (e) => {
     setGMap(false);
     e.preventDefault();
@@ -18,12 +17,12 @@ const PlaceItem = (props) => {
     setGMap(true);
     e.preventDefault();
   };
-  
+
   return (
     <React.Fragment>
       <Modal
         show={gMap}
-        onCancel={closeMap} 
+        onCancel={closeMap}
         header={props.address}
         contentClass="place-item__modal__content"
         footerClass="place-item__modal__actions"

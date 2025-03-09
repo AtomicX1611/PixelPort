@@ -16,16 +16,15 @@ const PlaceList = ({ list }) => {
       </div>
     );
   }
-   
   return (
     <ul className="place-list">
        {list.map(place => (
         <PlaceItem
-          key={place.id}
-          id={place.id}
+          key={place._id}
+          id={place._id}
           image={place.imageUrl}
           title={place.title}
-          description={place.des}
+          description={place.desc}
           address={place.address}
           creatorId={place.creatorID}
           location={place.location}

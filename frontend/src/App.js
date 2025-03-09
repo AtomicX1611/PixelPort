@@ -17,17 +17,17 @@ import { AuthContext } from "./context/AuthContext.js";
 
 const App = () => {
   const [isLoggedIn, setisLogin] = useState(false);
-  const [userId,setuserId] = useState(null)
+  const [userId, setuserId] = useState(null);
   let routes;
 
   const login = useCallback((user_id) => {
     setisLogin(true);
-    setuserId(user_id)
+    setuserId(user_id);
   }, []);
 
   const logout = useCallback(() => {
     setisLogin(false);
-    setuserId(null)
+    setuserId(null);
   }, []);
 
   if (isLoggedIn) {
@@ -53,7 +53,12 @@ const App = () => {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn: isLoggedIn, login: login, logout: logout,userId : userId }}
+      value={{
+        isLoggedIn: isLoggedIn,
+        login: login,
+        logout: logout,
+        userId: userId,
+      }}
     >
       <BrowserRouter>
         <MainNavigation />
