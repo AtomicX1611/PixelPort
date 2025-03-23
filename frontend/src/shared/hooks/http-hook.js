@@ -34,7 +34,7 @@ const useHttpClient = () => {
         setLoading(false);
         return responseData;
       } catch (error) {
-        console.log("Error Occurred in send request: ", error.message);
+        console.log("Error Occurred in send request: ", error);
         setError(error.message);
         setLoading(false);
         throw error;

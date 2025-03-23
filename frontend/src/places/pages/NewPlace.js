@@ -8,6 +8,7 @@ import useHttpClient from "../../shared/hooks/http-hook.js";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext.js";
 import ErrorModal from "../../shared/components/UiElements/ErrorModal.js";
+import ImageUplaod from "../../shared/components/FormElements/ImageUpload.js";
 
 const NewPlace = () => {
   const authContext = useContext(AuthContext);
@@ -21,6 +22,10 @@ const NewPlace = () => {
       value: "",
       isValid: false,
     },
+    image : {
+      value : null,
+      isValid : false
+    }
   });
 
   const AddPlaceHandler = async (event) => {
@@ -28,26 +33,18 @@ const NewPlace = () => {
     event.preventDefault();
     try {
       console.log("Sending Request,");
-      console.log(formState.inputs);
-      await sendRequest(
-        "http://localhost:5000/api/places/",
-        "POST",
-        JSON.stringify({
-          pid: "u1",
-          title: formState.inputs.Title.value,
-          desc: formState.inputs.Description.value,
-          address: formState.inputs.address.value,
-          creatorID: authContext.userId,
-          imageUrl: formState.inputs.imageUrl.value,
-          location: {
-            lng : "11",
-            lat : "122"
-          },
-        }),
-        { 
-          "Content-Type": "application/json",
-        }
-      );
+      const formData = new FormData();
+      console.log("Form Data : ", formState.inputs);
+
+      formData.append("title", formState.inputs.Title.value);
+      formData.append("desc", formState.inputs.Description.value);
+      formData.append("address", formState.inputs.Address.value);
+      formData.append("creatorID", authContext.userId);
+      formData.append("image", formState.inputs.image.value);
+      formData.append("location",JSON.stringify({ lng: "74.001", lat: "40.712" }));
+      formData.append("pid","100")
+
+      await sendRequest("http://localhost:5000/api/places/", "POST", formData);
     } catch (error) {
       console.log("Couldnt add place, ", error);
     }
@@ -70,29 +67,21 @@ const NewPlace = () => {
           id="Description"
           element="desc"
           type="text"
-          label="Description" 
+          label="Description"
           validators={[VALIDATOR_REQUIRE()]}
           error="Please enter valid Description"
           onInput={InputHandler}
         />
-          <Input
+        <Input
           id="Address"
           element="input"
           type="text"
-          label="Address" 
+          label="Address"
           validators={[VALIDATOR_REQUIRE()]}
           error="Please enter valid Address"
           onInput={InputHandler}
         />
-         <Input
-          id="ImageUrl"
-          element="input"
-          type="file"
-          label="Image" 
-          validators={[VALIDATOR_REQUIRE()]}
-          error="Please upload a valid image"
-          onInput={InputHandler}
-        />
+        <ImageUplaod center id="image" onInput={InputHandler}/>
         <Button type="submit">ADD PLACE</Button>
       </form>
     </React.Fragment>

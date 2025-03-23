@@ -1,6 +1,6 @@
 import React from "react";
 
-import "./UserList.css"
+import "./UserList.css";
 import { Link } from "react-router-dom";
 
 const UserList = (props) => {
@@ -9,35 +9,21 @@ const UserList = (props) => {
   }
 
   return (
-    <div className="container">
-    <div className="scrollContainer">
-      <div className="userList">
+    <div className="users-list-container">
+      <div className="users-list">
         {props.users.map((user) => (
-         <Link to={`/${user._id}/places`} className="userLink">
-         <div key={user.id} className="userItem">
-            <div className="avatarContainer">
-              {user.avatarUrl ? (
-                <img 
-                  src={user.avatarUrl} 
-                  alt={`${user.name}'s avatar`} 
-                  className="avatarImage" 
-                />
-              ) : (
-                <div className="avatarFallback">
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
-              )}
+          <Link key={user._id} to={`/${user._id}/places`} className="user-item">
+            <div className="user-avatar">
+              <img
+                src={`http://localhost:5000/${user.image}`}
+                alt={`${user.name || "User"}'s profile`}
+                className="user-image"
+              />
             </div>
-            <span className="userName">
-              {user.name}
-            </span>
-          </div>
-         </Link>
+          </Link>
         ))}
       </div>
     </div>
-  </div>
-  
   );
 };
 

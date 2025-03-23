@@ -1,9 +1,7 @@
 import User from "../model/user.js";
 
 const getAllUsers = async (req, res, next) => {
-
-  let users;
-  
+  let users;  
   try {
     users = await User.find({})
     console.log("Retrieved all users") 
@@ -36,6 +34,8 @@ const signUpUser = async (req, res, next) => {
     name,
     email,
     password,
+    image : req.file.path,
+    places : []
   });
 
   await user.save();

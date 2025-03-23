@@ -37,7 +37,7 @@ const ImageUplaod = (props) => {
       setIsValid(!isValid);
       fileIsValid = false;
     }
-    // props.onInput(props.id, pickedFile, fileIsValid);
+     props.onInput(props.id, pickedFile, fileIsValid);
   };
 
   return (

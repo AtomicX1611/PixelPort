@@ -36,15 +36,19 @@ const getPlacesByUserId = async (req, res, next) => {
 };
 
 const createPlace = async (req, res, next) => {
-  const { pid, title, desc, address, creatorID, imageUrl, location } = req.body;
-  console.log("Creating Place called");
+  const { pid, title, desc, address, creatorID, imageUrl } = req.body;
+  console.log("File path : ",req.file);
+    
+  const location = JSON.parse(req.body.location)
+
+  console.log("Creating Place called,body : ",req.body);
   const createdPlace = new Place({
     pid,
     title,
     desc,
     address,
     creatorID,
-    imageUrl,
+    imageUrl : req.file.path,
     location,
   });
 

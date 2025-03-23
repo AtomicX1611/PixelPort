@@ -37,11 +37,11 @@ const Auth = () => {
       error.message = "Email and Password cannot be empty";
       return;
     }
-    
+
     let response;
     if (isLogin) {
       try {
-       response = await sendRequest(
+        response = await sendRequest(
           "http://localhost:5000/api/users/login",
           "POST",
           JSON.stringify({
@@ -57,21 +57,22 @@ const Auth = () => {
       } catch (error) {}
     } else {
       try {
+        const formData = new FormData();
+        formData.append("email", formState.inputs.email.value);
+        formData.append("password", formState.inputs.password.value);
+        formData.append("name", formState.inputs.name.value);
+        formData.append("image", formState.inputs.image.value);
         response = await sendRequest(
           "http://localhost:5000/api/users/signup",
           "POST",
-          JSON.stringify({
-            email: formState.inputs.email.value,
-            password: formState.inputs.password.value,
-            name: formState.inputs.name.value,
-          }),
-          {
-            "Content-Type": "application/json",
-          }
+          formData
         );
+        console.log("navigating uesr");
         auth.login(response.user._id);
         navigate("/");
-      } catch (err) {}
+      } catch (err) {
+        console.log("Some ", err);
+      }
     }
   };
   const switchModeHandler = () => {
@@ -82,13 +83,18 @@ const Auth = () => {
           value: undefined,
           isValid: false,
         },
+        image: undefined,
       });
     } else {
       setFormState({
         ...formState.inputs,
         name: {
           value: "",
-          isValid: true,
+          isValid: false,
+        },
+        image: {
+          value: null,
+          isValid: false,
         },
       });
     }
@@ -120,7 +126,7 @@ const Auth = () => {
             onInput={InputHandler}
             validators={[VALIDATOR_REQUIRE()]}
           />
-          {!isLogin && <ImageUplaod center id="image"/>}
+          {!isLogin && <ImageUplaod center id="image" onInput={InputHandler} />}
           <Input
             id="password"
             type="text"
@@ -129,11 +135,11 @@ const Auth = () => {
             onInput={InputHandler}
             validators={[VALIDATOR_REQUIRE()]}
           />
-          <Button type="submit" className="customButton"   disabled={!formState.isValid}>
+          <Button type="submit" className="customButton">
             {isLogin ? "LOGIN" : "SIGNUP"}
           </Button>
         </form>
-        <Button inverse onClick={switchModeHandler} className="customButton" >
+        <Button inverse onClick={switchModeHandler} className="customButton">
           SWITCH TO {!isLogin ? "LOGIN" : "SIGNUP"}
         </Button>
       </Card>

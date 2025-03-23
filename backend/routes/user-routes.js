@@ -5,12 +5,13 @@ import {
   getAllUsers,
   loginUser,
 } from "../controllers/user-controllers.js";
+import fileUpload from "../middlewares/fileUpload.js";
 
 const userRouter = express.Router();
 
 userRouter.get("/", getAllUsers);
 
-userRouter.post("/signup", signUpUser);
+userRouter.post("/signup", fileUpload.single("image"),signUpUser);
 
 userRouter.post("/login", loginUser);
 

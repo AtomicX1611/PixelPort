@@ -6,9 +6,10 @@ import {
   getPlacesByUserId,
   updatePlace,
 } from "../controllers/place-controllers.js";
+import fileUpload from "../middlewares/fileUpload.js";
 
 const placeRouter = express.Router();
-placeRouter.post("/", createPlace); 
+placeRouter.post("/",fileUpload.single("image"), createPlace);  
 placeRouter.get("/:pid", getPlaceById); 
 placeRouter.get("/user/:uid", getPlacesByUserId); 
 placeRouter.patch("/:pid", updatePlace); 
