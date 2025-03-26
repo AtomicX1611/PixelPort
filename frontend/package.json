@@ -5,6 +5,7 @@
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "@react-google-maps/api": "^2.20.5",
+    "bcryptjs": "^3.0.2",
     "bootstrap": "^5.3.3",
     "cra-template": "1.2.0",
     "mongoose": "^8.9.5",

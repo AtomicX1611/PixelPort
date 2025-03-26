@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -14,23 +14,56 @@ import UserPlaces from "./places/pages/UserPlaces.js";
 import UpdatePlace from "./places/pages/Updateplace.js";
 import Auth from "./user/pages/Auth.js";
 import { AuthContext } from "./context/AuthContext.js";
+import Logout from "./shared/components/Navigation/Logout.js";
+
+
+let logoutTimer;
 
 const App = () => {
-  const [isLoggedIn, setisLogin] = useState(false);
+  const [token, setToken] = useState(null);
+  const [expirationDate,setExpirationDate] = useState(null)
   const [userId, setuserId] = useState(null);
   let routes;
 
-  const login = useCallback((user_id) => {
-    setisLogin(true);
+  const login = useCallback((user_id, token,expiration) => {
+    setToken(token);
+    const tokenExpirationDate = expiration || new Date(new Date().getTime() + 1000 * 60 * 60);
+    setExpirationDate(tokenExpirationDate)
+    localStorage.setItem(
+      "userData",
+      JSON.stringify({
+        userId,
+        token,
+        expiration : tokenExpirationDate.toISOString
+      })
+    );
     setuserId(user_id);
   }, []);
 
   const logout = useCallback(() => {
-    setisLogin(false);
+    setToken(null);
+    setExpirationDate(null)
     setuserId(null);
+    localStorage.removeItem("userData");
   }, []);
 
-  if (isLoggedIn) {
+  useEffect(() => {
+    if(token && expirationDate){
+      const reaminingTime = expirationDate.getTime() - new Date()
+      logoutTimer = setTimeout(logout,reaminingTime)
+    }else{
+      clearTimeout(logoutTimer)
+    }
+  },[token,Logout,expirationDate])
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("uesrData");
+    if (storedData && storedData.token && new Date(storedData.expiration) > new Date()) {
+      login(storedData.userId, storedData.token,new Date(storedData.expiration));
+    }
+  }, [login,token,expirationDate]);
+
+  if (token) {
     routes = (
       <Routes>
         <Route path="/" element={<Users />} />
@@ -54,7 +87,8 @@ const App = () => {
   return (
     <AuthContext.Provider
       value={{
-        isLoggedIn: isLoggedIn,
+        isLoggedIn: !!token,
+        token: token,
         login: login,
         logout: logout,
         userId: userId,

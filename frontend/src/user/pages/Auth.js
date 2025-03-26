@@ -52,7 +52,7 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.login(response.user._id);
+        auth.login(response.user._id,response.token);
         navigate("/");
       } catch (error) {}
     } else {
@@ -68,7 +68,7 @@ const Auth = () => {
           formData
         );
         console.log("navigating uesr");
-        auth.login(response.user._id);
+        auth.login(response.userId,response.token);
         navigate("/");
       } catch (err) {
         console.log("Some ", err);

@@ -37,18 +37,18 @@ const getPlacesByUserId = async (req, res, next) => {
 
 const createPlace = async (req, res, next) => {
   const { pid, title, desc, address, creatorID, imageUrl } = req.body;
-  console.log("File path : ",req.file);
-    
-  const location = JSON.parse(req.body.location)
+  console.log("File path : ", req.file);
 
-  console.log("Creating Place called,body : ",req.body);
+  const location = JSON.parse(req.body.location);
+
+  console.log("Creating Place called,body : ", req.body);
   const createdPlace = new Place({
     pid,
     title,
     desc,
     address,
     creatorID,
-    imageUrl : req.file.path,
+    imageUrl: req.file.path,
     location,
   });
 
@@ -79,8 +79,8 @@ const createPlace = async (req, res, next) => {
 const updatePlace = async (req, res, next) => {
   const placeID = req.params.pid;
   const { title, desc } = req.body;
-  
-  console.log("Updating Place")
+
+  console.log("Updating Place");
   let place;
   try {
     place = await Place.findById(placeID);
@@ -89,15 +89,19 @@ const updatePlace = async (req, res, next) => {
     return next(error);
   }
 
+  if (place.creatorID !== req.userData.userId) {
+    return next(new Error("Your not allowed to edit this place"));
+  }
+
   place.title = title;
   place.desc = desc;
 
   try {
     await place.save();
-    console.log("Updating Place done")
-  } catch(err){
+    console.log("Updating Place done");
+  } catch (err) {
     const error = new Error("Could not save place");
-    console.log("Error Occurred : ",err)
+    console.log("Error Occurred : ", err);
     return next(error);
   }
 
@@ -113,6 +117,10 @@ const deletePlace = async (req, res, next) => {
   } catch {
     const error = new Error("Could not load place with given id");
     return next(error);
+  }
+
+  if (place.creatorID !== req.userData.userId) {
+    return next(new Error("Your not allowed to delete this place"));
   }
 
   try {

@@ -44,7 +44,11 @@ const NewPlace = () => {
       formData.append("location",JSON.stringify({ lng: "74.001", lat: "40.712" }));
       formData.append("pid","100")
 
-      await sendRequest("http://localhost:5000/api/places/", "POST", formData);
+      await sendRequest("http://localhost:5000/api/places/", "POST", formData,
+        {
+          Authorization : "Bearer "+authContext.token
+        }
+      );
     } catch (error) {
       console.log("Couldnt add place, ", error);
     }
