@@ -14,6 +14,7 @@ const useHttpClient = () => {
       // const httpAbortController = new AbortController();
       // activeHttpRequest.current.push(httpAbortController);
       try {
+        console.log("posting place,",method,body,headers)
         const response = await fetch(url, {
           method,
           body,
@@ -35,6 +36,7 @@ const useHttpClient = () => {
         return responseData;
       } catch (error) {
         console.log("Error Occurred in send request: ", error);
+        console.log("Error Occurred in send request: ", error.message);
         setError(error.message);
         setLoading(false);
         throw error;

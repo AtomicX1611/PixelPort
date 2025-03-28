@@ -17,8 +17,9 @@ const getAllUsers = async (req, res, next) => {
 
 const signUpUser = async (req, res, next) => {
   const { name, email, password } = req.body;
+  console.log("Calling signing up user : ",req.body)
   let checkUser;
-
+  
   try {
     checkUser = await User.findOne({ email: email });
   } catch {
@@ -42,7 +43,7 @@ const signUpUser = async (req, res, next) => {
   const user = new User({
     name,
     email,
-    hashedPassword,
+    password : hashedPassword,
     image: req.file.path,
     places: [],
   });
@@ -93,6 +94,7 @@ const loginUser = async (req, res, next) => {
   token = jwt.sign({ userId: user.id, email: user.email }, "XXX", {
     expiresIn: "1hr",
   });
+
 
   res.json({ message: "User logged in", token, userId: user.id });
 };

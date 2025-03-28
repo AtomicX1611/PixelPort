@@ -1,4 +1,3 @@
-
 import { useCallback, useReducer } from "react";
 
 const formReducer = (state, action) => {
@@ -15,7 +14,7 @@ const formReducer = (state, action) => {
     case "SET-DATA": {
       return {
         inputs: action.inputs,
-        isValid : action.isValid
+        isValid: action.isValid,
       };
     }
     default: {
@@ -32,25 +31,27 @@ export const useForm = (input) => {
     isValid: false,
   });
 
-  const InputHandler = useCallback((id, value, isValid) => {
-    const updatedInputs = {
-      ...formState.inputs,
-      [id]: { value, isValid },
-    };
-    
-    let isFormValid = true;
-    for (const inputId in updatedInputs) {
-      isFormValid = isFormValid && updatedInputs[inputId].isValid;
-    }
-        
-    dispatch({
-      type: "SET-DATA",
-      inputs: updatedInputs,
-      isValid: isFormValid,
-    });
-  }, [formState.inputs]);
+  const InputHandler = useCallback(
+    (id, value, isValid) => {
 
+      const updatedInputs = {
+        ...formState.inputs,
+        [id]: { value, isValid },
+      };
 
+      let isFormValid = true;
+      for (const inputId in updatedInputs) {
+        isFormValid = isFormValid && updatedInputs[inputId].isValid;
+      }
+
+      dispatch({
+        type: "SET-DATA",
+        inputs: updatedInputs,
+        isValid: isFormValid, 
+      });
+    },
+    [formState.inputs]
+  );
 
   const setFormState = useCallback((inputData) => {
     console.log("Setting the data : ", inputData);

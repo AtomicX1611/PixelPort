@@ -34,7 +34,7 @@ const Auth = () => {
     event.preventDefault();
     console.log("FormState : ", formState.inputs);
     if (!formState.inputs.email.value || !formState.inputs.password.value) {
-      error.message = "Email and Password cannot be empty";
+      error.message = "Email and Password cannot be empty"
       return;
     }
 
@@ -52,9 +52,12 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.login(response.user._id,response.token);
+        console.log("Logging in user,", response);
+        auth.login(response.userId, response.token);
         navigate("/");
-      } catch (error) {}
+      } catch (error) {
+        console.log("Some error is occurring : ", error);
+      }
     } else {
       try {
         const formData = new FormData();
@@ -67,14 +70,14 @@ const Auth = () => {
           "POST",
           formData
         );
-        console.log("navigating uesr");
-        auth.login(response.userId,response.token);
+        auth.login(response.userId, response.token);
         navigate("/");
       } catch (err) {
         console.log("Some ", err);
       }
     }
   };
+
   const switchModeHandler = () => {
     if (isLogin) {
       setFormState({

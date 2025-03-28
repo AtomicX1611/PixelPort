@@ -43,10 +43,10 @@ const NewPlace = () => {
       formData.append("image", formState.inputs.image.value);
       formData.append("location",JSON.stringify({ lng: "74.001", lat: "40.712" }));
       formData.append("pid","100")
-
+      console.log("Logging token in frontend : ",authContext.token)
       await sendRequest("http://localhost:5000/api/places/", "POST", formData,
         {
-          Authorization : "Bearer "+authContext.token
+          Authorization : "Bearer "+authContext.token,
         }
       );
     } catch (error) {

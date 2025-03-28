@@ -6,7 +6,7 @@ import useHttpClient from "../../shared/hooks/http-hook.js";
 const UserPlaces = () => {
   const userID = useParams().userId;
   console.log("User Places called by ", userID);
-
+  
   const [places, setPlaces] = useState([]);
   const { loading, error, sendRequest, clearError } = useHttpClient();
 
@@ -32,7 +32,7 @@ const UserPlaces = () => {
   return (
     <React.Fragment>
 
-      <PlaceList list={places} />
+      <PlaceList list={places} userId={userID}/>
     </React.Fragment>
   );
 };
