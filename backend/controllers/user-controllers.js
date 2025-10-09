@@ -3,16 +3,32 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const getAllUsers = async (req, res, next) => {
-  let users;
-  try {
-    users = await User.find({});
-    console.log("Retrieved all users");
-  } catch {
-    const error = new Error("Couldnt get users");
-    return next(error);
-  }
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skipIndex = (page - 1) * limit;
 
-  res.json({ message: users });
+  try {
+    const users = await User.find({})
+      .select('-password') // Exclude password from response
+      .sort({ _id: -1 }) // Sort by newest first
+      .skip(skipIndex)
+      .limit(limit);
+
+    const totalUsers = await User.countDocuments({});
+    const hasMore = skipIndex + users.length < totalUsers;
+
+    res.json({
+      message: users,
+      currentPage: page,
+      totalPages: Math.ceil(totalUsers / limit),
+      hasMore: hasMore,
+      totalUsers: totalUsers
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    const err = new Error("Couldn't get users");
+    return next(err);
+  }
 };
 
 const signUpUser = async (req, res, next) => {

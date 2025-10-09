@@ -69,3 +69,97 @@
   padding: 20px;
   color: #888;
 }
+
+.users-container {
+  padding: 20px;
+  max-width: 100%;
+}
+
+.users-title {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.horizontal-scroll-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #f1f1f1;
+}
+
+.horizontal-scroll-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.horizontal-scroll-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.horizontal-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.horizontal-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+.horizontal-user-list {
+  display: flex;
+  gap: 16px;
+  padding: 10px 0;
+  min-width: max-content;
+}
+
+.user-card {
+  flex-shrink: 0;
+  min-width: 130px; /* Adjust based on your UserList component width */
+  max-width: 180px;
+  transition: transform 0.2s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .users-container {
+    padding: 15px;
+  }
+  
+  .user-card {
+    min-width: 250px;
+    max-width: 280px;
+  }
+  
+  .horizontal-user-list {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .users-container {
+    padding: 5px;
+  }
+  
+  .users-title {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .user-card {
+    min-width: 120px;
+    max-width: 200px;
+  }
+  
+  .horizontal-user-list {
+    gap: 10px;
+  }
+}
+

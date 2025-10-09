@@ -3,10 +3,16 @@ import Card from "../../shared/components/UiElements/Card";
 import PlaceItem from "./PlaceItem"; 
 import "./PLaceList.css";
 import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 
 const PlaceList = ({ list, userId }) => {
   const auth = useContext(AuthContext)
+  const navigate = useNavigate()
+
+  const onClickHandler = () => {
+    navigate('/places/new')
+  }
   if (list.length === 0) {
     if(userId !== auth.userId){
       return(
@@ -21,7 +27,7 @@ const PlaceList = ({ list, userId }) => {
       <div className="place-list center">
         <Card>
           <h2>No Places Found. Create?</h2>
-          <button>Share Place</button>
+          <button onClick={onClickHandler}>Share Place</button>
         </Card>
       </div>
     );

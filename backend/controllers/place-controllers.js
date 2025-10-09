@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Place from "../model/place.js";
 import User from "../model/user.js";
+import fs from "fs";
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
@@ -137,10 +138,60 @@ const deletePlace = async (req, res, next) => {
   res.status(200).json({ message: "Deleted place successfully" });
 };
 
+const getAllImages = async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 12;
+  const skipIndex = (page - 1) * limit;
+
+  try {
+    console.log('Fetching places with pagination:', { page, limit, skipIndex });
+    
+    const places = await Place.find()
+      .select('title desc imageUrl creatorID')
+      .populate('creatorID')
+      .sort({ _id: -1 })
+      .skip(skipIndex)
+      .limit(limit);
+
+    const totalPlaces = await Place.countDocuments();
+    const hasMore = skipIndex + places.length < totalPlaces;
+
+    console.log('Found places:', places.length);
+    console.log('Sample place:', places[0]);
+    
+    const images = places.map(place => ({
+      id: place._id,
+      title: place.title || '',
+      description: place.desc || '',
+      path: place.imageUrl || '',
+      creator: place.creatorID ? {
+        id: place.creatorID._id,
+        name: place.creatorID.name || 'Unknown',
+        image: place.creatorID.image || ''
+      } : null
+    }));
+
+    console.log('Processed images:', images.length);
+    
+    return res.json({
+      images,
+      currentPage: page,
+      totalPages: Math.ceil(totalPlaces / limit),
+      hasMore: hasMore,
+      totalImages: totalPlaces
+    });
+
+  } catch (error) {
+    console.error('Error in getAllImages:', error);
+    return next(new Error("Couldn't get images: " + error.message));
+  }
+};
+
 export {
   getPlaceById,
   getPlacesByUserId,
   createPlace,
   updatePlace,
   deletePlace,
+  getAllImages
 };

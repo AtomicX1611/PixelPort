@@ -14,16 +14,26 @@
   display: block;
   width: 3rem;
   height: 2.5px;
-  background: rgb(217, 17, 17);
+  background: #6366f1;
 }
 
 .main-navigation__title {
   color: white;
+  margin: 0 1rem;
 }
 
 .main-navigation__title a {
   text-decoration: none;
   color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.main-navigation__title a:hover {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .main-navigation__header-nav {

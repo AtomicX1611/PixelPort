@@ -4,8 +4,17 @@ import mongoose from "mongoose";
 import fs from "fs";
 import path from "path";
 import cors from "cors";
+import * as dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import placeRouter from "./routes/place-routes.js";
 import userRouter from "./routes/user-routes.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load environment variables
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 
@@ -25,7 +34,6 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/places", placeRouter);
-
 app.use("/api/users", userRouter);
 
 app.use((req, res, next) => {
@@ -48,14 +56,40 @@ app.use((error, req, res, next) => {
     .json({ message: error.message || "Error Occurred" });
 });
 
+console.log('Attempting to connect to MongoDB...');
 mongoose
-  .connect(
-    "mongodb+srv://karthikandroid16:AtamicX@cluster0.wu2r2.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0"
-  )
+  .connect(process.env.MONGODB_URL)
   .then(() => {
-    app.listen(5000);
-    console.log("Starting server");
+    const port = process.env.PORT || 5000;
+    app.listen(port);
+    console.log(`Server successfully connected to MongoDB and started on port ${port}`);
+  })
+  .catch((error) => {
+    console.error('MongoDB connection error:', error);
   })
   .catch((err) => {
     console.log(err);
   });
+
+
+  // 'GET :- /api/users/ - getAllUsers.
+  // 'POST :- /api/users/signup - signUpUser 
+  // userModel -> 
+// const User = new Schema(
+//     {
+//           name : {type : String , required : true},
+//           email : {type : String , required : true, unique : true},
+//           password : {type : String , required : true},
+//           image : {type : String , required : true},
+//           places : [{type : mongoose.Types.ObjectId ,required : true , ref : 'Place'}]
+//     }
+// ) image should be from multer 
+// 'POST :- /api/users/login 
+
+// "GET -: api/places/user/:uid" - getallplacesforuserId
+// "GET "  api/places/:pi - getALlplaces
+// "POST - api/places/" -createPlace "user multer to to upload image"
+// "PATCH -: api/places/:pid" -updatePlace
+// "DELETE -: api/places/:pid"  - deletePlace
+
+//
