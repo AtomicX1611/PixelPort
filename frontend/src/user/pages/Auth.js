@@ -28,6 +28,14 @@ const Auth = () => {
       value: "",
       isValid: false,
     },
+    name: {
+      value: "",
+      isValid: true
+    },
+    image: {
+      value: null,
+      isValid: true
+    }
   });
 
   const authSubmitHandler = async (event) => {
@@ -79,26 +87,45 @@ const Auth = () => {
   };
 
   const switchModeHandler = () => {
-    if (isLogin) {
+    if (!isLogin) {
+      // Switching to login mode
       setFormState({
-        ...formState.inputs,
-        name: {
-          value: undefined,
-          isValid: false,
+        email: {
+          value: formState.inputs.email.value,
+          isValid: formState.inputs.email.isValid
         },
-        image: undefined,
-      });
-    } else {
-      setFormState({
-        ...formState.inputs,
+        password: {
+          value: formState.inputs.password.value,
+          isValid: formState.inputs.password.isValid
+        },
         name: {
           value: "",
-          isValid: false,
+          isValid: true
         },
         image: {
           value: null,
-          isValid: false,
+          isValid: true
+        }
+      });
+    } else {
+      // Switching to signup mode
+      setFormState({
+        email: {
+          value: formState.inputs.email.value,
+          isValid: formState.inputs.email.isValid
         },
+        password: {
+          value: formState.inputs.password.value,
+          isValid: formState.inputs.password.isValid
+        },
+        name: {
+          value: "",
+          isValid: false
+        },
+        image: {
+          value: null,
+          isValid: false
+        }
       });
     }
     setisLogin((prev) => !prev);
@@ -107,45 +134,68 @@ const Auth = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      <Card className="auth-card">
-        {loading && <LoadingSpinner asOverlay />}
-        <h2>{isLogin ? "LOGIN" : "SIGNUP"}</h2>
-        {!isLogin && (
-          <Input
-            id="name"
-            type="text"
-            label="UserName"
-            element="input"
-            onInput={InputHandler}
-            validators={[VALIDATOR_REQUIRE()]}
-          />
-        )}
-        <form onSubmit={authSubmitHandler}>
+      <div className="authentication">
+        <Card className="authentication-container">
+          {loading && <LoadingSpinner asOverlay />}
+          <h2>{isLogin ? "Welcome Back!" : "Create Account"}</h2>
+          <form onSubmit={authSubmitHandler} className="auth-form">
+          {!isLogin && (
+            <Input
+              id="name"
+              type="text"
+              label="Full Name"
+              element="input"
+              placeholder="Enter your full name"
+              onInput={InputHandler}
+              validators={[VALIDATOR_REQUIRE()]}
+              errorText="Please enter your name"
+            />
+          )}
           <Input
             id="email"
-            type="text"
-            label="Email"
+            type="email"
+            label="Email Address"
             element="input"
+            placeholder="Enter your email"
             onInput={InputHandler}
             validators={[VALIDATOR_REQUIRE()]}
+            errorText="Please enter a valid email"
           />
-          {!isLogin && <ImageUplaod center id="image" onInput={InputHandler} />}
+          {!isLogin && (
+            <div className="image-upload-container">
+              <ImageUplaod
+                center
+                id="image"
+                onInput={InputHandler}
+                errorText="Please provide a profile image"
+              />
+            </div>
+          )}
           <Input
             id="password"
-            type="text"
+            type="password"
             label="Password"
             element="input"
+            placeholder={isLogin ? "Enter your password" : "Create a password"}
             onInput={InputHandler}
             validators={[VALIDATOR_REQUIRE()]}
+            errorText="Please enter a valid password"
           />
-          <Button type="submit" className="customButton">
-            {isLogin ? "LOGIN" : "SIGNUP"}
+          <Button type="submit" disabled={!formState.isValid}>
+            {isLogin ? "Sign In" : "Create Account"}
+          </Button>
+          <Button
+            type="button"
+            onClick={switchModeHandler}
+            className="switch-mode"
+          >
+            {isLogin
+              ? "Don't have an account? Sign up"
+              : "Already have an account? Sign in"}
           </Button>
         </form>
-        <Button inverse onClick={switchModeHandler} className="customButton">
-          SWITCH TO {!isLogin ? "LOGIN" : "SIGNUP"}
-        </Button>
       </Card>
+      </div>
     </React.Fragment>
   );
 };

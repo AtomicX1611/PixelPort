@@ -37,12 +37,22 @@ const getPlacesByUserId = async (req, res, next) => {
 };
 
 const createPlace = async (req, res, next) => {
-  const { pid, title, desc, address, creatorID} = req.body;
+  const { pid, title, desc, address, creatorID } = req.body;
   console.log("File path : ", req.file);
 
-  const location = JSON.parse(req.body.location);
+  if (!req.file) {
+    const error = new Error("No image file provided");
+    return next(error);
+  }
 
-  console.log("Creating Place called,body : ", req.body);
+  let location;
+  try {
+    location = JSON.parse(req.body.location);
+  } catch (error) {
+    return next(new Error("Invalid location data"));
+  }
+
+  console.log("Creating Place called, body : ", req.body);
   const createdPlace = new Place({
     pid,
     title,

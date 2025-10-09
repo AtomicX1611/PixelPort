@@ -17,18 +17,23 @@ const PlaceList = ({ list, userId }) => {
     if(userId !== auth.userId){
       return(
         <div className="place-list center">
-           <Card>
-            <h2>User has no places uploaded.</h2>
-           </Card>
+          <div className="no-places-card">
+            <h2>User has no places uploaded</h2>
+          </div>
         </div>
       )
     }
     return (
       <div className="place-list center">
-        <Card>
-          <h2>No Places Found. Create?</h2>
-          <button onClick={onClickHandler}>Share Place</button>
-        </Card>
+        <div className="no-places-card">
+          <h2>Share Your First Place</h2>
+          <button className="share-place-button" onClick={onClickHandler}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Share Place
+          </button>
+        </div>
       </div>
     );
   }

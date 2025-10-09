@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  BrowserRouter as Router,
   Route,
   Routes,
   BrowserRouter,
+  Navigate
 } from "react-router-dom";
 
 import "./App.css";
@@ -79,11 +79,10 @@ const App = () => {
     routes = (
       <Routes>
         <Route path="/" element={<Users />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/:userId/places" exact element={<UserPlaces />} />
-        <Route path="/places/new" exact element={<NewPlace />} />
+        <Route path="/places/new" element={<NewPlace />} />
         <Route path="/places/:pid" element={<UpdatePlace />} />
-        <Route path="/user" element={<Users />} />
+        <Route path="/:userId/places" element={<UserPlaces />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     );
   } else {
@@ -91,7 +90,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Users />} />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/:userId/places" exact element={<UserPlaces />} />
+        <Route path="/:userId/places" element={<UserPlaces />} />
+        <Route path="*" element={<Navigate to="/auth" replace />} />
       </Routes>
     );
   }

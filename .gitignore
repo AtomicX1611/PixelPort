@@ -18,6 +18,10 @@
 .env.test.local
 .env.production.local
 
+# uploaded files
+**/uploads/images/
+backend/uploads/images/
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

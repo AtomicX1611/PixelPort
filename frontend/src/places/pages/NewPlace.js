@@ -36,13 +36,18 @@ const NewPlace = () => {
       const formData = new FormData();
       console.log("Form Data : ", formState.inputs);
 
+      if (!formState.inputs.image?.value) {
+        console.log("No image selected");
+        return;
+      }
+
       formData.append("title", formState.inputs.Title.value);
       formData.append("desc", formState.inputs.Description.value);
       formData.append("address", formState.inputs.Address.value);
       formData.append("creatorID", authContext.userId);
       formData.append("image", formState.inputs.image.value);
-      formData.append("location",JSON.stringify({ lng: "74.001", lat: "40.712" }));
-      formData.append("pid","100")
+      formData.append("location", JSON.stringify({ lng: "74.001", lat: "40.712" }));
+      formData.append("pid", "100")
       console.log("Logging token in frontend : ",authContext.token)
       await sendRequest("http://localhost:5000/api/places/", "POST", formData,
         {
