@@ -6,13 +6,13 @@ import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 
-const PlaceList = ({ list, userId }) => {
-  const auth = useContext(AuthContext)
-  const navigate = useNavigate()
+const PlaceList = ({ list, userId, onPlaceDeleted }) => {
+  const auth = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const onClickHandler = () => {
-    navigate('/places/new')
-  }
+    navigate('/places/new');
+  };
   if (list.length === 0) {
     if(userId !== auth.userId){
       return(
@@ -49,6 +49,7 @@ const PlaceList = ({ list, userId }) => {
           address={place.address}
           creatorId={place.creatorID}
           location={place.location}
+          onDelete={onPlaceDeleted}
         />
       ))}
     </ul>

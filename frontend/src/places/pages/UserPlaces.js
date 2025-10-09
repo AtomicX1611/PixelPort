@@ -29,10 +29,17 @@ const UserPlaces = () => {
     fetchPlaces();
   }, [sendRequest,userID]);
 
+  const placeDeletedHandler = (deletedPlaceId) => {
+    setPlaces(prevPlaces => prevPlaces.filter(place => place._id !== deletedPlaceId));
+  };
+
   return (
     <React.Fragment>
-
-      <PlaceList list={places} userId={userID}/>
+      <PlaceList 
+        list={places} 
+        userId={userID} 
+        onPlaceDeleted={placeDeletedHandler}
+      />
     </React.Fragment>
   );
 };

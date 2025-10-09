@@ -1,21 +1,53 @@
-import React from "react";
-import { useState } from "react";
-
+import React, { useState, useContext } from "react";
 import Card from "../../shared/components/UiElements/Card.js";
 import "./PlaceItem.css";
 import Button from "../../shared/components/UiElements/Button.js";
 import Modal from "../../shared/components/UiElements/Modal.js";
 import GMap from "../../shared/components/UiElements/Map.js";
+import { AuthContext } from "../../context/AuthContext.js";
+import useHttpClient from "../../shared/hooks/http-hook.js";
+import { useNavigate } from "react-router-dom";
 
 const PlaceItem = (props) => {
+  const auth = useContext(AuthContext);
+  const { sendRequest } = useHttpClient();
+  const navigate = useNavigate();
   const [gMap, setGMap] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
   const closeMap = (e) => {
     setGMap(false);
     e.preventDefault();
   };
+  
   const openMap = (e) => {
     setGMap(true);
     e.preventDefault();
+  };
+
+  const showDeleteWarningHandler = () => {
+    setShowConfirmModal(true);
+  };
+
+  const cancelDeleteHandler = () => {
+    setShowConfirmModal(false);
+  };
+
+  const confirmDeleteHandler = async () => {
+    setShowConfirmModal(false);
+    try {
+      await sendRequest(
+        `http://localhost:5000/api/places/${props.id}`,
+        'DELETE',
+        null,
+        {
+          Authorization: 'Bearer ' + auth.token
+        }
+      );
+      props.onDelete(props.id);
+    } catch (err) {
+      console.log("Error deleting place:", err);
+    }
   };
 
   return (
@@ -31,6 +63,23 @@ const PlaceItem = (props) => {
         <div className="map-container">
           <GMap lat={props.location.lat} lng={props.location.lng} />
         </div>
+      </Modal>
+      <Modal
+        show={showConfirmModal}
+        onCancel={cancelDeleteHandler}
+        header="Are you sure?"
+        footerClass="place-item__modal-actions"
+        footer={
+          <React.Fragment>
+            <Button inverse onClick={cancelDeleteHandler}>CANCEL</Button>
+            <Button danger onClick={confirmDeleteHandler}>DELETE</Button>
+          </React.Fragment>
+        }
+      >
+        <p>
+          Do you want to proceed and delete this place? Please note that this action
+          cannot be undone.
+        </p>
       </Modal>
       <li className="place-item">
         <Card className="place-item__content">
@@ -55,12 +104,14 @@ const PlaceItem = (props) => {
               </svg>
               Edit
             </Button>
-            <Button className="delete-btn" danger>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              Delete
-            </Button>
+            {auth.userId === props.creatorId && (
+              <Button className="delete-btn" danger onClick={showDeleteWarningHandler}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Delete
+              </Button>
+            )}
           </div>
         </Card>
       </li>

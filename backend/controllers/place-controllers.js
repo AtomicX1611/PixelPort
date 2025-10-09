@@ -124,10 +124,14 @@ const deletePlace = async (req, res, next) => {
 
   let place;
   try {
-    place = await Place.findById(placeID).populate("createrID");
-  } catch {
+    place = await Place.findById(placeID).populate("creatorID");
+  } catch (err) {
     const error = new Error("Could not load place with given id");
     return next(error);
+  }
+
+  if (!place) {
+    return next(new Error("Place not found"));
   }
 
   if (place.creatorID !== req.userData.userId) {
@@ -135,13 +139,22 @@ const deletePlace = async (req, res, next) => {
   }
 
   try {
+    const imagePath = place.imageUrl;
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    place.remove({ session: sess });
+    await place.deleteOne({ session: sess });
     place.creatorID.places.pull(place);
-    place.creatorID.places.save({ session: sess });
-    sess.commitTransaction();
-  } catch {
+    await place.creatorID.save({ session: sess });
+    await sess.commitTransaction();
+
+    // Delete the image file
+    fs.unlink(imagePath, err => {
+      if (err) {
+        console.log("Error deleting image file:", err);
+      }
+    });
+  } catch (err) {
+    console.log("Error during delete:", err);
     const error = new Error("Could not remove place");
     return next(error);
   }
