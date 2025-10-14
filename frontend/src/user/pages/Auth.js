@@ -3,7 +3,8 @@ import { AuthContext } from "../../context/AuthContext.js";
 import { useNavigate } from "react-router-dom";
 
 import { VALIDATOR_REQUIRE } from "../../shared/utils/validator.js";
-import "./Auth.css";
+import "./Auth.modern.css";
+import { motion } from "framer-motion";
 import Card from "../../shared/components/UiElements/Card.js";
 import Button from "../../shared/components/UiElements/Button.js";
 import { useForm } from "../../shared/hooks/form-hook.js";
@@ -134,68 +135,126 @@ const Auth = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      <div className="authentication">
-        <Card className="authentication-container">
+      <motion.div 
+        className="authentication"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.div 
+          className="authentication-container"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+        >
           {loading && <LoadingSpinner asOverlay />}
-          <h2>{isLogin ? "Welcome Back!" : "Create Account"}</h2>
-          <form onSubmit={authSubmitHandler} className="auth-form">
-          {!isLogin && (
-            <Input
-              id="name"
-              type="text"
-              label="Full Name"
-              element="input"
-              placeholder="Enter your full name"
-              onInput={InputHandler}
-              validators={[VALIDATOR_REQUIRE()]}
-              errorText="Please enter your name"
-            />
-          )}
-          <Input
-            id="email"
-            type="email"
-            label="Email Address"
-            element="input"
-            placeholder="Enter your email"
-            onInput={InputHandler}
-            validators={[VALIDATOR_REQUIRE()]}
-            errorText="Please enter a valid email"
-          />
-          {!isLogin && (
-            <div className="image-upload-container">
-              <ImageUplaod
-                center
-                id="image"
+          <motion.div
+            className="auth-header"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            <h2>{isLogin ? "Welcome Back!" : "Create Account"}</h2>
+            <p>
+              {isLogin 
+                ? "Sign in to continue your journey" 
+                : "Join our community and share amazing places"
+              }
+            </p>
+          </motion.div>
+          
+          <motion.form 
+            className="auth-form"
+            onSubmit={authSubmitHandler}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+          >
+            {!isLogin && (
+              <div className="form-control">
+                <Input
+                  id="name"
+                  type="text"
+                  label="Full Name"
+                  element="input"
+                  placeholder="Enter your full name"
+                  onInput={InputHandler}
+                  validators={[VALIDATOR_REQUIRE()]}
+                  errorText="Please enter your name"
+                />
+              </div>
+            )}
+            
+            <div className="form-control">
+              <Input
+                id="email"
+                type="email"
+                label="Email Address"
+                element="input"
+                placeholder="Enter your email"
                 onInput={InputHandler}
-                errorText="Please provide a profile image"
+                validators={[VALIDATOR_REQUIRE()]}
+                errorText="Please enter a valid email"
               />
             </div>
-          )}
-          <Input
-            id="password"
-            type="password"
-            label="Password"
-            element="input"
-            placeholder={isLogin ? "Enter your password" : "Create a password"}
-            onInput={InputHandler}
-            validators={[VALIDATOR_REQUIRE()]}
-            errorText="Please enter a valid password"
-          />
-          <Button type="submit" disabled={!formState.isValid}>
-            {isLogin ? "Sign In" : "Create Account"}
-          </Button>
-          <Button
-            type="button"
-            onClick={switchModeHandler}
-            className="switch-mode"
+            
+            {!isLogin && (
+              <motion.div 
+                className="image-upload-container"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
+                <ImageUplaod
+                  center
+                  id="image"
+                  onInput={InputHandler}
+                  errorText="Please provide a profile image"
+                />
+              </motion.div>
+            )}
+            
+            <div className="form-control">
+              <Input
+                id="password"
+                type="password"
+                label="Password"
+                element="input"
+                placeholder={isLogin ? "Enter your password" : "Create a password"}
+                onInput={InputHandler}
+                validators={[VALIDATOR_REQUIRE()]}
+                errorText="Please enter a valid password"
+              />
+            </div>
+
+            <Button 
+              type="submit" 
+              disabled={!formState.isValid}
+              className="submit-button"
+            >
+              {isLogin ? "Sign In" : "Create Account"}
+            </Button>
+          </motion.form>
+
+          <motion.div 
+            className="auth-footer"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
           >
-            {isLogin
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Sign in"}
-          </Button>
-        </form>
-      </Card>
-      </div>
+            <Button
+              type="button"
+              onClick={switchModeHandler}
+              className="switch-mode"
+              inverse
+            >
+              {isLogin
+                ? "Don't have an account? Sign up"
+                : "Already have an account? Sign in"}
+            </Button>
+          </motion.div>
+        </motion.div>
+      </motion.div>
     </React.Fragment>
   );
 };

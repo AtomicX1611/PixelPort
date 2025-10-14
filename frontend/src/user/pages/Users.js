@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import UserList from "../components/UserList";
 import "../components/UserList.css";
 import usehttpClient from "../../shared/hooks/http-hook.js";
 import ImageGallery from "../../places/components/ImageGallery";
+import { AuthContext } from "../../context/AuthContext.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion } from "framer-motion";
@@ -12,13 +13,13 @@ import "./Users.modern.css";
 gsap.registerPlugin(ScrollTrigger);
 
 const Users = () => {
+  const auth = useContext(AuthContext);
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
-  const heroRef = useRef(null);
   const { loading, error, sendRequest, clearError } = usehttpClient();
   const [heroRef1, inViewHero] = useInView({
     threshold: 0.2,
@@ -28,14 +29,33 @@ const Users = () => {
   const fetchUsers = async (pageNumber) => {
     try {
       setIsInitialLoad(true);
+      console.log('AuthContext state:', auth); // Log entire auth context
+      console.log('Current user ID type:', typeof auth.userId);
+      console.log('Current user ID value:', auth.userId);
+
       const response = await sendRequest(
         `http://localhost:5000/api/users?page=${pageNumber}&limit=16${searchTerm ? `&search=${searchTerm}` : ''}${activeFilter !== 'all' ? `&filter=${activeFilter}` : ''}`
       );
       const newUsers = response.message || [];
+      
+      console.log('First user from server:', newUsers[0]); // Log first user's structure
+      console.log('First user ID type:', typeof newUsers[0]?._id);
+      console.log('Users from server:', newUsers.map(u => ({ id: u._id, name: u.name }))); // Log simplified user list
+      
+      // Filter out the current user with detailed logging
+      const filteredUsers = newUsers.filter(user => {
+        const matches = user._id !== auth.userId;
+        console.log(`Comparing user ${user._id} with auth ${auth.userId}: ${matches ? 'different' : 'same'}`);
+        return matches;
+      });
+      
+      console.log('Filtered users count:', filteredUsers.length);
+      console.log('Removed users count:', newUsers.length - filteredUsers.length);
+      
       if (pageNumber === 1) {
-        setUsers(newUsers);
+        setUsers(filteredUsers);
       } else {
-        setUsers((prevUsers) => [...prevUsers, ...newUsers]);
+        setUsers((prevUsers) => [...prevUsers, ...filteredUsers]);
       }
       setHasMore(newUsers.length === 16);
       setIsInitialLoad(false);
@@ -46,18 +66,37 @@ const Users = () => {
   };
 
   useEffect(() => {
-    setPage(1);
-    const timer = setTimeout(() => {
-      fetchUsers(1);
-    }, 500); // Debounce search
-    return () => clearTimeout(timer);
-  }, [searchTerm, activeFilter]);
+    // Only fetch users if auth context is initialized
+    if (auth.isLoggedIn && auth.userId) {
+      setPage(1);
+      const timer = setTimeout(() => {
+        fetchUsers(1);
+      }, 500); // Debounce search
+      return () => clearTimeout(timer);
+    }
+  }, [searchTerm, activeFilter, auth.isLoggedIn, auth.userId]);
 
   useEffect(() => {
-    if (page > 1) {
+    if (page > 1 && auth.isLoggedIn && auth.userId) {
       fetchUsers(page);
     }
-  }, [page]);
+  }, [page, auth.isLoggedIn, auth.userId]);
+
+  // Initial fetch when auth is ready
+  useEffect(() => {
+    if (auth.isLoggedIn && auth.userId) {
+      fetchUsers(1);
+    }
+  }, [auth.isLoggedIn, auth.userId]);
+
+  // Monitor auth context changes
+  useEffect(() => {
+    console.log('Auth context updated:', {
+      isLoggedIn: auth.isLoggedIn,
+      userId: auth.userId,
+      token: auth.token ? 'present' : 'absent'
+    });
+  }, [auth]);
 
   const handleScroll = (event) => {
     const { scrollTop, clientHeight, scrollHeight } = event.target;
@@ -165,7 +204,7 @@ const Users = () => {
           <div className="users-grid" onScroll={handleScroll}>
             {users.map((user, index) => (
               <motion.div 
-                key={user.id} 
+                key={user._id} 
                 className="user-card-wrapper"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
