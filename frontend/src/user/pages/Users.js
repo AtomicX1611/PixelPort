@@ -29,33 +29,20 @@ const Users = () => {
   const fetchUsers = async (pageNumber) => {
     try {
       setIsInitialLoad(true);
-      console.log('AuthContext state:', auth); // Log entire auth context
-      console.log('Current user ID type:', typeof auth.userId);
-      console.log('Current user ID value:', auth.userId);
-
       const response = await sendRequest(
         `http://localhost:5000/api/users?page=${pageNumber}&limit=16${searchTerm ? `&search=${searchTerm}` : ''}${activeFilter !== 'all' ? `&filter=${activeFilter}` : ''}`
       );
       const newUsers = response.message || [];
       
-      console.log('First user from server:', newUsers[0]); // Log first user's structure
-      console.log('First user ID type:', typeof newUsers[0]?._id);
-      console.log('Users from server:', newUsers.map(u => ({ id: u._id, name: u.name }))); // Log simplified user list
-      
-      // Filter out the current user with detailed logging
-      const filteredUsers = newUsers.filter(user => {
-        const matches = user._id !== auth.userId;
-        console.log(`Comparing user ${user._id} with auth ${auth.userId}: ${matches ? 'different' : 'same'}`);
-        return matches;
-      });
-      
-      console.log('Filtered users count:', filteredUsers.length);
-      console.log('Removed users count:', newUsers.length - filteredUsers.length);
+      // Filter out current user only if authenticated
+      const processedUsers = auth.isLoggedIn && auth.userId
+        ? newUsers.filter(user => user._id !== auth.userId)
+        : newUsers;
       
       if (pageNumber === 1) {
-        setUsers(filteredUsers);
+        setUsers(processedUsers);
       } else {
-        setUsers((prevUsers) => [...prevUsers, ...filteredUsers]);
+        setUsers((prevUsers) => [...prevUsers, ...processedUsers]);
       }
       setHasMore(newUsers.length === 16);
       setIsInitialLoad(false);
@@ -65,29 +52,26 @@ const Users = () => {
     }
   };
 
+  // Handle search and filter changes
   useEffect(() => {
-    // Only fetch users if auth context is initialized
-    if (auth.isLoggedIn && auth.userId) {
-      setPage(1);
-      const timer = setTimeout(() => {
-        fetchUsers(1);
-      }, 500); // Debounce search
-      return () => clearTimeout(timer);
-    }
-  }, [searchTerm, activeFilter, auth.isLoggedIn, auth.userId]);
+    setPage(1);
+    const timer = setTimeout(() => {
+      fetchUsers(1);
+    }, 500); // Debounce search
+    return () => clearTimeout(timer);
+  }, [searchTerm, activeFilter, auth.isLoggedIn]);
 
+  // Handle pagination
   useEffect(() => {
-    if (page > 1 && auth.isLoggedIn && auth.userId) {
+    if (page > 1) {
       fetchUsers(page);
     }
-  }, [page, auth.isLoggedIn, auth.userId]);
+  }, [page]);
 
-  // Initial fetch when auth is ready
+  // Initial fetch and refetch when auth state changes
   useEffect(() => {
-    if (auth.isLoggedIn && auth.userId) {
-      fetchUsers(1);
-    }
-  }, [auth.isLoggedIn, auth.userId]);
+    fetchUsers(1);
+  }, [auth.isLoggedIn]);
 
   // Monitor auth context changes
   useEffect(() => {
@@ -138,7 +122,7 @@ const Users = () => {
       >
         <div className="hero-content">
           <motion.h1 
-            className="hero-title"
+            className="hero-title text-gradient"
             initial={{ opacity: 0, y: 30 }}
             animate={inViewHero ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2, duration: 0.6 }}
@@ -146,7 +130,7 @@ const Users = () => {
             Welcome to PixelPort
           </motion.h1>
           <motion.p 
-            className="hero-subtitle"
+            className="hero-subtitle text-light"
             initial={{ opacity: 0, y: 20 }}
             animate={inViewHero ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.4, duration: 0.6 }}

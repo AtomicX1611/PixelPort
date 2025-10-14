@@ -66,12 +66,12 @@ body {
 /* Hero Section */
 .hero-section {
   position: relative;
-  min-height: 80vh;
-  padding: 6rem 2rem;
+  min-height: 70vh;
+  padding: 6rem 2rem 8rem;
   background: linear-gradient(135deg, var(--primary-600) 0%, var(--accent-purple) 100%);
   color: white;
   overflow: hidden;
-  clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
 }
 
 .hero-section::before {
@@ -100,7 +100,16 @@ body {
   letter-spacing: -0.02em;
   margin-bottom: 1.5rem;
   line-height: 1.1;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.hero-title.text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.85) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
 }
 
 .hero-subtitle {
@@ -108,7 +117,9 @@ body {
   line-height: 1.6;
   max-width: 600px;
   margin: 0 auto 3rem;
-  opacity: 0.9;
+  color: white;
+  opacity: 0.95;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Search Container */
@@ -179,10 +190,19 @@ body {
 /* Community Section */
 .users-section {
   max-width: 1800px;
-  margin: -4rem auto 4rem;
-  padding: 0 2rem;
+  margin: 2rem auto 4rem;
+  padding: 4rem 2rem 0;
   position: relative;
   z-index: 2;
+}
+
+.section-title {
+  color: var(--neutral-800);
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3rem;
+  padding-top: 2rem;
 }
 
 .users-grid-container {
