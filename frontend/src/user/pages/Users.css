@@ -5,13 +5,18 @@
 }
 
 .hero-section {
+  min-height: 80vh;
   position: relative;
-  text-align: center;
-  padding: 8rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
   background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
   margin-bottom: 4rem;
-  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
   color: white;
+  position: relative;
+  overflow: hidden;
 }
 
 .hero-section::before {
@@ -33,6 +38,60 @@
   100% {
     background-position: 100px 100px;
   }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hero-content {
+  animation: float 6s ease-in-out infinite;
+}
+
+.hero-title {
+  animation: fadeInUp 1s ease-out, gradientFlow 8s ease infinite;
+  background-size: 200% auto;
+}
+
+.user-card-wrapper {
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+
+.user-card-wrapper:hover {
+  transform: translateY(-10px) rotateX(5deg);
+}
+
+.empty-state {
+  animation: fadeInUp 0.8s ease-out;
 }
 
 .hero-title {
@@ -89,14 +148,94 @@
 
 .users-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
-  padding: 1rem;
-  max-height: 800px;
+  padding: 1.5rem;
+  max-height: none;
   overflow-y: auto;
   position: relative;
   scrollbar-width: thin;
   scrollbar-color: #6366f1 #f3f4f6;
+  perspective: 1000px;
+}
+
+.users-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.users-grid::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 10px;
+}
+
+.users-grid::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  border-radius: 10px;
+}
+
+.search-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.search-input {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.filter-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.filter-btn.active {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .users-grid::-webkit-scrollbar {

@@ -6,11 +6,38 @@ const getAllUsers = async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skipIndex = (page - 1) * limit;
+  const searchTerm = req.query.search || '';
+  const filter = req.query.filter || 'all';
 
   try {
-    const users = await User.find({})
+    // Build search query
+    let searchQuery = {};
+    if (searchTerm) {
+      searchQuery = {
+        $or: [
+          { name: { $regex: searchTerm, $options: 'i' } },
+          { email: { $regex: searchTerm, $options: 'i' } }
+        ]
+      };
+    }
+
+    // Build filter query
+    let filterQuery = {};
+    if (filter === 'popular') {
+      filterQuery = { places: { $exists: true, $not: { $size: 0 } } };
+    } else if (filter === 'new') {
+      filterQuery = { createdAt: { $gte: new Date(Date.now() - 7*24*60*60*1000) } };
+    }
+
+    // Combine search and filter queries
+    const finalQuery = {
+      ...searchQuery,
+      ...filterQuery
+    };
+
+    const users = await User.find(finalQuery)
       .select('-password') // Exclude password from response
-      .sort({ _id: -1 }) // Sort by newest first
+      .sort({ createdAt: -1 }) // Sort by newest first
       .skip(skipIndex)
       .limit(limit);
 
