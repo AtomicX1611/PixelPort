@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import usehttpClient from '../../shared/hooks/http-hook';
 import Card from '../../shared/components/UiElements/Card';
+import Lightbox from '../../shared/components/UiElements/Lightbox';
 import './ImageGallery.css';
 
 const ImageGallery = () => {
@@ -8,6 +9,8 @@ const ImageGallery = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const { loading, error, sendRequest } = usehttpClient();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const fetchImages = async (pageNumber) => {
     try {
@@ -40,7 +43,17 @@ const ImageGallery = () => {
   const ImageCard = ({ image }) => (
     <Card className="image-card">
       <div className="image-container">
-        <img src={`http://localhost:5000/${image.path}`} alt={image.title} loading="lazy" />
+        <img
+          src={`http://localhost:5000/${image.path}`}
+          alt={image.title}
+          loading="lazy"
+          onClick={() => {
+            const idx = images.findIndex((img) => img.path === image.path);
+            setLightboxIndex(idx >= 0 ? idx : 0);
+            setLightboxOpen(true);
+          }}
+          style={{ cursor: 'zoom-in' }}
+        />
       </div>
       <div className="image-info">
         <h3>{image.title}</h3>
@@ -54,7 +67,7 @@ const ImageGallery = () => {
       <h2 className="section-title">Featured Places</h2>
       <div className="image-grid" onScroll={handleScroll}>
         {images.map((image, index) => (
-          <div key={`${image.id}-${index}`} className="image-item">
+          <div key={`${image.id || image._id}-${index}`} className="image-item">
             <ImageCard image={image} />
           </div>
         ))}
@@ -72,6 +85,13 @@ const ImageGallery = () => {
         <div className="error-message">
           <p>Failed to load images. Please try again later.</p>
         </div>
+      )}
+      {lightboxOpen && (
+        <Lightbox
+          images={images.map((img) => ({ src: `http://localhost:5000/${img.path}`, alt: img.title, title: img.title }))}
+          startIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+        />
       )}
     </section>
   );

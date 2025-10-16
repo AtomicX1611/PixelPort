@@ -1,6 +1,5 @@
-/* Design System - Color Palette */
+
 :root {
-  /* Primary Colors */
   --primary-50: #f0f7ff;
   --primary-100: #e0eefe;
   --primary-200: #b9ddfd;
@@ -12,7 +11,6 @@
   --primary-800: #074b85;
   --primary-900: #0c406e;
 
-  /* Neutrals */
   --neutral-50: #f8fafc;
   --neutral-100: #f1f5f9;
   --neutral-200: #e2e8f0;
@@ -24,26 +22,20 @@
   --neutral-800: #1e293b;
   --neutral-900: #0f172a;
 
-  /* Accents */
   --accent-purple: #8b5cf6;
   --accent-teal: #14b8a6;
   --accent-pink: #ec4899;
   
-  /* Fonts */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Plus Jakarta Sans', var(--font-sans);
-  
-  /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   
-  /* Transitions */
   --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: all 0.6s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* Modern Reset */
 * {
   margin: 0;
   padding: 0;
@@ -57,13 +49,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Page Container */
 .page-container {
   min-height: 100vh;
   background: linear-gradient(180deg, var(--neutral-50) 0%, var(--neutral-100) 100%);
 }
 
-/* Hero Section */
 .hero-section {
   position: relative;
   min-height: 70vh;
