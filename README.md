@@ -1,4 +1,4 @@
-# Places Sharing Application
+# Media Sharing Application
 
 Full-stack web app for creating, sharing, and exploring places with images and map locations.
 
