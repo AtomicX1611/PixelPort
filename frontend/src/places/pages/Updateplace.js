@@ -50,14 +50,8 @@ const UpdatePlace = () => {
   const [place, setPlace] = useState();
 
   const [formState, InputHandler, setFormState] = useForm({
-    title: {
-      value: "",
-      isValid: false,
-    },
-    description: {
-      value: "",
-      isValid: false,
-    },
+    title: { value: "", isValid: false },
+    description: { value: "", isValid: false },
   });
 
   const { loading, error, sendRequest, clearError } = useHttpClient();
@@ -71,12 +65,8 @@ const UpdatePlace = () => {
         );
         console.log("Loggin Data : ", responseData.message);
         setFormState({
-          title: {
-            value: responseData.message.title,
-          },
-          description: {
-            value: responseData.message.desc,
-          },
+          title: { value: responseData.message.title, isValid: true },
+          description: { value: responseData.message.desc, isValid: true },
         });
         setPlace(responseData.message);
       } catch (error) {}
@@ -101,7 +91,7 @@ const UpdatePlace = () => {
         }),
         {
           "Content-Type": "application/json",
-          Authorization : "Bearer "+auth.token
+          Authorization : "Bearer " + auth.token
         }
       );
       navigate("/" + auth.userId + "/places");
@@ -124,7 +114,7 @@ const UpdatePlace = () => {
             validators={[]}
           ></Input>
           <Input
-            id="desc"
+            id="description"
             element="input"
             onInput={InputHandler}
             label="Description"

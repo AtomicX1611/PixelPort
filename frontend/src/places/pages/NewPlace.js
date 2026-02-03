@@ -15,18 +15,10 @@ const NewPlace = () => {
   const authContext = useContext(AuthContext);
   const { loading, sendRequest, error, clearError } = useHttpClient();
   const [formState, InputHandler] = useForm({
-    title: {
-      value: "",
-      isValid: false,
-    },
-    description: {
-      value: "",
-      isValid: false,
-    },
-    image : {
-      value : null,
-      isValid : false
-    }
+    title: { value: "", isValid: false },
+    description: { value: "", isValid: false },
+    address: { value: "", isValid: false },
+    image: { value: null, isValid: false },
   });
 
   const AddPlaceHandler = async (event) => {
@@ -38,12 +30,12 @@ const NewPlace = () => {
       }
 
       const formData = new FormData();
-      formData.append("title", formState.inputs.Title.value);
-      formData.append("desc", formState.inputs.Description.value);
-      formData.append("address", formState.inputs.Address.value);
+      formData.append("title", formState.inputs.title.value);
+      formData.append("desc", formState.inputs.description.value);
+      formData.append("address", formState.inputs.address.value);
       formData.append("creatorID", authContext.userId);
       formData.append("image", formState.inputs.image.value);
-      formData.append("location", JSON.stringify({ lng: "74.001", lat: "40.712" }));
+      formData.append("location", JSON.stringify({ lng: 74.001, lat: 40.712 }));
       formData.append("pid", "100");
 
       await sendRequest(
@@ -67,7 +59,7 @@ const NewPlace = () => {
       <ErrorModal error={error} onClear={clearError} />
       <form className="place-form" onSubmit={AddPlaceHandler}>
         <Input
-          id="Title"
+          id="title"
           element="input"
           type="text"
           label="Title"
@@ -76,8 +68,8 @@ const NewPlace = () => {
           onInput={InputHandler}
         />
         <Input
-          id="Description"
-          element="desc"
+          id="description"
+          element="textarea"
           type="text"
           label="Description"
           validators={[VALIDATOR_REQUIRE()]}
@@ -85,7 +77,7 @@ const NewPlace = () => {
           onInput={InputHandler}
         />
         <Input
-          id="Address"
+          id="address"
           element="input"
           type="text"
           label="Address"
@@ -94,7 +86,7 @@ const NewPlace = () => {
           onInput={InputHandler}
         />
         <ImageUplaod center id="image" onInput={InputHandler}/>
-        <Button type="submit">ADD PLACE</Button>
+        <Button type="submit" disabled={!formState.isValid}>ADD PLACE</Button>
       </form>
     </React.Fragment>
   );

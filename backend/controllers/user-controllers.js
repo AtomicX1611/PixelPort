@@ -2,6 +2,8 @@ import User from "../model/user.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+const JWT_SECRET = process.env.JWT_SECRET;
+
 const getAllUsers = async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
@@ -41,7 +43,7 @@ const getAllUsers = async (req, res, next) => {
       .skip(skipIndex)
       .limit(limit);
 
-    const totalUsers = await User.countDocuments({});
+    const totalUsers = await User.countDocuments(finalQuery);
     const hasMore = skipIndex + users.length < totalUsers;
 
     res.json({
@@ -60,86 +62,72 @@ const getAllUsers = async (req, res, next) => {
 
 const signUpUser = async (req, res, next) => {
   const { name, email, password } = req.body;
-  console.log("Calling signing up user : ",req.body)
-  let checkUser;
-  
-  try {
-    checkUser = await User.findOne({ email: email });
-  } catch {
-    const error = new Error("Something went wrong");
-    return next(error);
+  console.log("Calling signing up user : ", req.body);
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "Name, email, and password are required" });
   }
 
-  if (checkUser) {
-    const error = new Error("Email already Used");
-    return next(error);
+  if (!req.file) {
+    return res.status(400).json({ message: "Profile image is required" });
   }
 
-  let hashedPassword;
   try {
-    hashedPassword = await bcrypt.hash(password, 12);
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already in use" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      image: req.file.path,
+      places: [],
+    });
+
+    await user.save();
+
+    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    return res.status(201).json({ userId: user.id, token });
   } catch (error) {
-    console.log("Error Occurred ,Couldnt create user->  ", error.message);
-    return next(error);
+    console.log("Error creating user:", error.message);
+    return next(new Error("Something went wrong while creating user"));
   }
-
-  const user = new User({
-    name,
-    email,
-    password : hashedPassword,
-    image: req.file.path,
-    places: [],
-  });
-
-  await user.save();
-
-  let token;
-  token = jwt.sign({ userId: user.id, email: user.email }, "XXX", {
-    expiresIn: "1hr",
-  });
-
-  res.json({ userId: user.id, token });
 };
 
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    res.json({ message: "Email and Password cannot be empty" });
+    return res.status(400).json({ message: "Email and password are required" });
   }
-  console.log("Request Body:", req.body);
-  let user;
+
   try {
-    user = await User.findOne({ email: email });
-  } catch {
-    const err = new Error("Couldnt find User");
-    return next(err);
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    return res.json({ message: "User logged in", token, userId: user.id });
+  } catch (error) {
+    console.log("Login error:", error.message);
+    return next(new Error("Could not log in user"));
   }
-
-  if (!user) {
-    return res.status(404).json({ message: "User not in database : ", user });
-  }
-
-  let isValidPassword;
-  try {
-    isValidPassword = await bcrypt.compare(password, user.password);
-  } catch {
-    const error = new Error("Couldnt validate password");
-    return next(error);
-  }
-
-  if (!isValidPassword) {
-    const error = new Error("Incorrect password");
-    return next(error);
-  }
-
-  let token;
-  token = jwt.sign({ userId: user.id, email: user.email }, "XXX", {
-    expiresIn: "1hr",
-  });
-
-
-  res.json({ message: "User logged in", token, userId: user.id });
 };
 
 export { getAllUsers, signUpUser, loginUser };

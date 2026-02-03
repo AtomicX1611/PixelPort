@@ -28,9 +28,9 @@ const getPlacesByUserId = async (req, res, next) => {
   let places;
   try {
     places = await Place.find({ creatorID: UserId });
-  } catch {
-    const error = new Error("Could not find plces with User id");
-    return next(error);
+  } catch (err) {
+    console.log("Error fetching places by user:", err.message);
+    return next(new Error("Could not find places for this user"));
   }
 
   res.status(200).json({ places: places });
@@ -100,8 +100,13 @@ const updatePlace = async (req, res, next) => {
     return next(error);
   }
 
-  if (place.creatorID !== req.userData.userId) {
-    return next(new Error("Your not allowed to edit this place"));
+  if (!place) {
+    return next(new Error("Place not found"));
+  }
+
+  const creatorId = place.creatorID?.id || place.creatorID?.toString();
+  if (creatorId !== req.userData.userId) {
+    return next(new Error("You are not allowed to edit this place"));
   }
 
   place.title = title;
@@ -134,14 +139,15 @@ const deletePlace = async (req, res, next) => {
     return next(new Error("Place not found"));
   }
 
-  if (place.creatorID !== req.userData.userId) {
-    return next(new Error("Your not allowed to delete this place"));
+  const creatorId = place.creatorID?.id || place.creatorID?.toString();
+  if (creatorId !== req.userData.userId) {
+    return next(new Error("You are not allowed to delete this place"));
   }
 
   try {
     const imagePath = place.imageUrl;
     const sess = await mongoose.startSession();
-    sess.startTransaction();
+    await sess.startTransaction();
     await place.deleteOne({ session: sess });
     place.creatorID.places.pull(place);
     await place.creatorID.save({ session: sess });

@@ -43,7 +43,6 @@ const Auth = () => {
     event.preventDefault();
     console.log("FormState : ", formState.inputs);
     if (!formState.inputs.email.value || !formState.inputs.password.value) {
-      error.message = "Email and Password cannot be empty"
       return;
     }
 
@@ -69,6 +68,9 @@ const Auth = () => {
       }
     } else {
       try {
+        if (!formState.inputs.image.value) {
+          return;
+        }
         const formData = new FormData();
         formData.append("email", formState.inputs.email.value);
         formData.append("password", formState.inputs.password.value);
