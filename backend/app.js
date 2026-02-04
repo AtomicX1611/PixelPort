@@ -4,11 +4,12 @@ import mongoose from "mongoose";
 import fs from "fs";
 import path from "path";
 import cors from "cors";
-import * as dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import * as dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import placeRouter from "./routes/place-routes.js";
 import userRouter from "./routes/user-routes.js";
+import HttpError from "./util/http-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -37,9 +38,7 @@ app.use("/api/places", placeRouter);
 app.use("/api/users", userRouter);
 
 app.use((req, res, next) => {
-  const error = new Error("Could not find this route");
-  console.log(error);
-  throw error;
+  next(new HttpError("Route not found", 404));
 });
 
 app.use((error, req, res, next) => {
@@ -66,9 +65,6 @@ mongoose
   })
   .catch((error) => {
     console.error('MongoDB connection error:', error);
-  })
-  .catch((err) => {
-    console.log(err);
   });
 
 

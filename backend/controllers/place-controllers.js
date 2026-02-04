@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Place from "../model/place.js";
 import User from "../model/user.js";
 import fs from "fs";
+import HttpError from "../util/http-error.js";
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
@@ -10,15 +11,14 @@ const getPlaceById = async (req, res, next) => {
     place = await Place.findById(placeId);
   } catch (err) {
     console.log(err);
-    return next(err);
+    return next(new HttpError("Error loading place", 500));
   }
 
   if (!place) {
-    const error = new Error("Could not find a place with the given id");
-    return next(error);
+    return next(new HttpError("Could not find a place with the given id", 404));
   }
 
-  res.json({ message: place.toObject({ getters: true }) });
+  res.json({ place: place.toObject({ getters: true }) });
 };
 
 const getPlacesByUserId = async (req, res, next) => {
@@ -30,26 +30,33 @@ const getPlacesByUserId = async (req, res, next) => {
     places = await Place.find({ creatorID: UserId });
   } catch (err) {
     console.log("Error fetching places by user:", err.message);
-    return next(new Error("Could not find places for this user"));
+    return next(new HttpError("Could not find places for this user", 500));
+  }
+
+  if (!places || places.length === 0) {
+    return next(new HttpError("No places found for this user", 404));
   }
 
   res.status(200).json({ places: places });
 };
 
 const createPlace = async (req, res, next) => {
-  const { pid, title, desc, address, creatorID } = req.body;
+  const { pid, title, desc, address } = req.body;
   console.log("File path : ", req.file);
 
+  if (!req.userData?.userId) {
+    return next(new HttpError("Authentication required", 401));
+  }
+
   if (!req.file) {
-    const error = new Error("No image file provided");
-    return next(error);
+    return next(new HttpError("No image file provided", 400));
   }
 
   let location;
   try {
     location = JSON.parse(req.body.location);
   } catch (error) {
-    return next(new Error("Invalid location data"));
+    return next(new HttpError("Invalid location data", 400));
   }
 
   console.log("Creating Place called, body : ", req.body);
@@ -58,17 +65,16 @@ const createPlace = async (req, res, next) => {
     title,
     desc,
     address,
-    creatorID,
+    creatorID: req.userData.userId,
     imageUrl: req.file.path,
     location,
   });
 
   let user;
   try {
-    user = await User.findById(creatorID);
+    user = await User.findById(req.userData.userId);
   } catch {
-    const error = new Error("Could not find user with given id");
-    return next(error);
+    return next(new HttpError("Could not find user with given id", 404));
   }
   console.log("Found user");
   try {
@@ -80,11 +86,10 @@ const createPlace = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (error) {
     console.log(error.message);
-    const err = new Error("Error occurred");
-    return next(err);
+    return next(new HttpError("Error occurred while saving place", 500));
   }
 
-  res.json({ message: createdPlace });
+  res.status(201).json({ place: createdPlace });
 };
 
 const updatePlace = async (req, res, next) => {
@@ -96,17 +101,16 @@ const updatePlace = async (req, res, next) => {
   try {
     place = await Place.findById(placeID);
   } catch {
-    const error = new Error("Could not load place with given id");
-    return next(error);
+    return next(new HttpError("Could not load place with given id", 500));
   }
 
   if (!place) {
-    return next(new Error("Place not found"));
+    return next(new HttpError("Place not found", 404));
   }
 
   const creatorId = place.creatorID?.id || place.creatorID?.toString();
   if (creatorId !== req.userData.userId) {
-    return next(new Error("You are not allowed to edit this place"));
+    return next(new HttpError("You are not allowed to edit this place", 403));
   }
 
   place.title = title;
@@ -116,9 +120,8 @@ const updatePlace = async (req, res, next) => {
     await place.save();
     console.log("Updating Place done");
   } catch (err) {
-    const error = new Error("Could not save place");
     console.log("Error Occurred : ", err);
-    return next(error);
+    return next(new HttpError("Could not save place", 500));
   }
 
   res.status(200).json({ place: place.toObject({ getters: true }) });
@@ -131,17 +134,16 @@ const deletePlace = async (req, res, next) => {
   try {
     place = await Place.findById(placeID).populate("creatorID");
   } catch (err) {
-    const error = new Error("Could not load place with given id");
-    return next(error);
+    return next(new HttpError("Could not load place with given id", 500));
   }
 
   if (!place) {
-    return next(new Error("Place not found"));
+    return next(new HttpError("Place not found", 404));
   }
 
   const creatorId = place.creatorID?.id || place.creatorID?.toString();
   if (creatorId !== req.userData.userId) {
-    return next(new Error("You are not allowed to delete this place"));
+    return next(new HttpError("You are not allowed to delete this place", 403));
   }
 
   try {
@@ -161,8 +163,7 @@ const deletePlace = async (req, res, next) => {
     });
   } catch (err) {
     console.log("Error during delete:", err);
-    const error = new Error("Could not remove place");
-    return next(error);
+    return next(new HttpError("Could not remove place", 500));
   }
   res.status(200).json({ message: "Deleted place successfully" });
 };
@@ -174,7 +175,7 @@ const getAllImages = async (req, res, next) => {
 
   try {
     console.log('Fetching places with pagination:', { page, limit, skipIndex });
-    
+
     const places = await Place.find()
       .select('title desc imageUrl creatorID')
       .populate('creatorID')
@@ -186,7 +187,9 @@ const getAllImages = async (req, res, next) => {
     const hasMore = skipIndex + places.length < totalPlaces;
 
     console.log('Found places:', places.length);
-    console.log('Sample place:', places[0]);
+    if (places[0]) {
+      console.log('Sample place:', places[0]._id);
+    }
     
     const images = places.map(place => ({
       id: place._id,
@@ -212,7 +215,7 @@ const getAllImages = async (req, res, next) => {
 
   } catch (error) {
     console.error('Error in getAllImages:', error);
-    return next(new Error("Couldn't get images: " + error.message));
+    return next(new HttpError("Couldn't get images: " + error.message, 500));
   }
 };
 

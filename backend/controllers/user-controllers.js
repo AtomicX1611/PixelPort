@@ -1,6 +1,7 @@
 import User from "../model/user.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import HttpError from "../util/http-error.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -55,8 +56,7 @@ const getAllUsers = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error fetching users:", error);
-    const err = new Error("Couldn't get users");
-    return next(err);
+    return next(new HttpError("Couldn't get users", 500));
   }
 };
 
@@ -64,18 +64,22 @@ const signUpUser = async (req, res, next) => {
   const { name, email, password } = req.body;
   console.log("Calling signing up user : ", req.body);
 
+  if (!JWT_SECRET) {
+    return next(new HttpError("Server misconfiguration: missing JWT secret", 500));
+  }
+
   if (!name || !email || !password) {
-    return res.status(400).json({ message: "Name, email, and password are required" });
+    return next(new HttpError("Name, email, and password are required", 400));
   }
 
   if (!req.file) {
-    return res.status(400).json({ message: "Profile image is required" });
+    return next(new HttpError("Profile image is required", 400));
   }
 
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ message: "Email already in use" });
+      return next(new HttpError("Email already in use", 409));
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -97,26 +101,30 @@ const signUpUser = async (req, res, next) => {
     return res.status(201).json({ userId: user.id, token });
   } catch (error) {
     console.log("Error creating user:", error.message);
-    return next(new Error("Something went wrong while creating user"));
+    return next(new HttpError("Something went wrong while creating user", 500));
   }
 };
 
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
+  if (!JWT_SECRET) {
+    return next(new HttpError("Server misconfiguration: missing JWT secret", 500));
+  }
+
   if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required" });
+    return next(new HttpError("Email and password are required", 400));
   }
 
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return next(new HttpError("User not found", 404));
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return next(new HttpError("Invalid credentials", 401));
     }
 
     const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
@@ -126,7 +134,7 @@ const loginUser = async (req, res, next) => {
     return res.json({ message: "User logged in", token, userId: user.id });
   } catch (error) {
     console.log("Login error:", error.message);
-    return next(new Error("Could not log in user"));
+    return next(new HttpError("Could not log in user", 500));
   }
 };
 
