@@ -1,7 +1,7 @@
 .users-list-container {
   width: 100%;
   overflow: hidden;
-  padding: 15px 0;
+  padding: 1rem 0;
 }
 
 .users-list {
@@ -9,19 +9,14 @@
   overflow-x: auto;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  gap: 20px;
-  padding: 0 15px;
+  gap: 1.25rem;
+  padding: 0.5rem 1rem;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
 .users-list::-webkit-scrollbar {
   display: none;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
-.users-list {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
 }
 
 .user-item {
@@ -30,23 +25,27 @@
   align-items: center;
   text-decoration: none;
   color: inherit;
-  min-width: 80px;
+  min-width: 90px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s ease;
 }
 
 .user-item:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
 }
 
 .user-avatar {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   overflow: hidden;
-  margin-bottom: 8px;
-  border: 2px solid #e0e0e0;
-  object-fit: cover;
+  margin-bottom: 0.5rem;
+  border: 2px solid var(--border);
+  transition: border-color 0.2s ease;
+}
+
+.user-item:hover .user-avatar {
+  border-color: var(--brand);
 }
 
 .user-image {
@@ -56,69 +55,71 @@
 }
 
 .user-name {
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
   text-align: center;
-  max-width: 80px;
+  max-width: 90px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--text-secondary);
 }
 
 .no-users {
   text-align: center;
-  padding: 20px;
-  color: #888;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
 }
 
 .users-container {
-  padding: 20px;
+  padding: 1.5rem;
   max-width: 100%;
 }
 
 .users-title {
-  margin-bottom: 20px;
-  font-size: 24px;
+  margin-bottom: 1.25rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .horizontal-scroll-wrapper {
   width: 100%;
   overflow-x: auto;
-  padding-bottom: 10px;
-  /* Custom scrollbar styling */
+  padding-bottom: 0.5rem;
   scrollbar-width: thin;
-  scrollbar-color: #ccc #f1f1f1;
+  scrollbar-color: var(--border) transparent;
 }
 
 .horizontal-scroll-wrapper::-webkit-scrollbar {
-  height: 8px;
+  height: 6px;
 }
 
 .horizontal-scroll-wrapper::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+  background: transparent;
+  border-radius: 3px;
 }
 
 .horizontal-scroll-wrapper::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
+  background: var(--border);
+  border-radius: 3px;
 }
 
 .horizontal-scroll-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  background: #94a3b8;
 }
 
 .horizontal-user-list {
   display: flex;
-  gap: 16px;
-  padding: 10px 0;
+  gap: 1rem;
+  padding: 0.5rem 0;
   min-width: max-content;
 }
 
 .user-card {
   flex-shrink: 0;
-  min-width: 130px; /* Adjust based on your UserList component width */
+  min-width: 130px;
   max-width: 180px;
   transition: transform 0.2s ease;
 }
@@ -127,39 +128,21 @@
   transform: translateY(-2px);
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .users-container {
-    padding: 15px;
+    padding: 1rem;
   }
-  
+
   .user-card {
-    min-width: 250px;
-    max-width: 280px;
-  }
-  
-  .horizontal-user-list {
-    gap: 12px;
+    min-width: 120px;
+    max-width: 160px;
   }
 }
 
 @media (max-width: 480px) {
-  .users-container {
-    padding: 5px;
-  }
-  
-  .users-title {
-    font-size: 20px;
-    margin-bottom: 15px;
-  }
-  
   .user-card {
-    min-width: 120px;
-    max-width: 200px;
-  }
-  
-  .horizontal-user-list {
-    gap: 10px;
+    min-width: 100px;
+    max-width: 140px;
   }
 }
 

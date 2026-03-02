@@ -1,59 +1,71 @@
 .modal {
-    z-index: 100;
-    position: fixed;
-    top: 22vh;
-    left: 10%;
+  z-index: 100;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 32rem;
+  background: white;
+  box-shadow: var(--shadow-xl);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.modal__header {
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.modal__header h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.modal__content {
+  padding: 1.5rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.modal__footer {
+  padding: 1rem 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.modal-enter {
+  transform: translate(-50%, -50%) scale(0.95);
+  opacity: 0;
+}
+
+.modal-enter-active {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  transition: all 200ms ease-out;
+}
+
+.modal-exit {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.modal-exit-active {
+  transform: translate(-50%, -50%) scale(0.95);
+  opacity: 0;
+  transition: all 150ms ease-in;
+}
+
+@media (min-width: 768px) {
+  .modal {
     width: 80%;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-    border-radius: 8px;
   }
-  
-  .modal__header {
-    width: 100%;
-    padding: 1rem 0.5rem;
-    background: #2a006e;
-    color: white;
-  }
-  
-  .modal__header h2 {
-    margin: 0.5rem;
-  }
-  
-  .modal__content {
-    padding: 1rem 0.5rem;
-  }
-  
-  .modal__footer {
-    padding: 1rem 0.5rem;
-  }
-  
-  @media (min-width: 768px) {
-    .modal {
-      left: calc(50% - 20rem);
-      width: 40rem;
-    }
-  }
-  
-  .modal-enter {
-    transform: translateY(-10rem);
-    opacity: 0;
-  }
-  
-  .modal-enter-active {
-    transform: translateY(0);
-    opacity: 1;
-    transition: all 200ms;
-  }
-  
-  .modal-exit {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  
-  .modal-exit-active {
-    transform: translateY(-10rem);
-    opacity: 0;
-    transition: all 200ms;
-  }
+}
   

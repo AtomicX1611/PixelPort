@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "bench:images": "node bench/run-images.js"
   },
   "author": "",
   "license": "ISC",
@@ -19,11 +20,12 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
-    "mongoose-unique-validator": "^4.0.1",
     "multer": "^1.4.5-lts.1",
+    "redis": "^4.6.13",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "autocannon": "^7.14.0"
   }
 }

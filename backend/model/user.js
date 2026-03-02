@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import uniqueValidator from "mongoose-unique-validator";
 
 const User = new Schema(
     {
@@ -12,6 +11,8 @@ const User = new Schema(
     }
 )
 
-User.plugin(uniqueValidator)
+// Indexes to speed lookups and recent-user sorting
+User.index({ email: 1 }, { unique: true });
+User.index({ createdAt: -1 });
 
 export default mongoose.model('User',User);

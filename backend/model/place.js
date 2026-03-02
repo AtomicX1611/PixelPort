@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const placeSchema = new Schema({
   pid : {type : String , required : false, default: () => uuidv4()},
-  title: { type: String, require: true },
+  title: { type: String, required: true },
   desc : {type : String,required : true},
   imageUrl :{type : String,required : true},
   address : {type : String,required : true},
@@ -13,6 +13,10 @@ const placeSchema = new Schema({
   },
   creatorID : {type : mongoose.Types.ObjectId ,required : true , ref : 'User'},
 }, { timestamps: true });
+
+// Optimized indexes for common queries
+placeSchema.index({ creatorID: 1, _id: -1 }); // speeds user-specific lists + reverse sort
+placeSchema.index({ createdAt: -1 }); // speeds recent-first sorts
 
 const schema = mongoose.model('Place',placeSchema)
 
