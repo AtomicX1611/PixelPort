@@ -210,8 +210,9 @@ const deletePlace = async (req, res, next) => {
 const getAllImages = async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 12;
+  const search = req.query.search ? req.query.search.trim() : '';
   const skipIndex = (page - 1) * limit;
-  const cacheKey = `images:page=${page}:limit=${limit}`;
+  const cacheKey = `images:page=${page}:limit=${limit}:search=${search}`;
 
   const cached = await getCache(cacheKey);
   if (cached) {
@@ -219,15 +220,19 @@ const getAllImages = async (req, res, next) => {
   }
 
   try {
-    const places = await Place.find()
-      .select('title desc imageUrl creatorID')
-      .populate('creatorID')
+    const filter = search
+      ? { title: { $regex: search, $options: 'i' } }
+      : {};
+
+    const places = await Place.find(filter)
+      .select('title desc imageUrl creatorID address')
+      .populate('creatorID', 'name image')
       .sort({ _id: -1 })
       .skip(skipIndex)
       .limit(limit)
       .lean({ getters: true });
 
-    const totalPlaces = await Place.countDocuments();
+    const totalPlaces = await Place.countDocuments(filter);
     const response = buildImagesResponse(places, page, limit, totalPlaces);
 
     await setCache(cacheKey, response, 120);

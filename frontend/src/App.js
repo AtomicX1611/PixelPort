@@ -14,6 +14,7 @@ import UserPlaces from "./places/pages/UserPlaces.js";
 import UpdatePlace from "./places/pages/Updateplace.js";
 import Auth from "./user/pages/Auth.js";
 import { AuthContext } from "./context/AuthContext.js";
+import Explore from "./places/pages/Explore.js";
 
 let logoutTimer;
 
@@ -74,6 +75,7 @@ const App = () => {
     routes = (
       <Routes>
         <Route path="/" element={<Users />} />
+        <Route path="/explore" element={<Explore />} />
         <Route path="/places/new" element={<NewPlace />} />
         <Route path="/places/:pid" element={<UpdatePlace />} />
         <Route path="/:userId/places" element={<UserPlaces />} />
@@ -84,6 +86,7 @@ const App = () => {
     routes = (
       <Routes>
         <Route path="/" element={<Users />} />
+        <Route path="/explore" element={<Explore />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/:userId/places" element={<UserPlaces />} />
         <Route path="*" element={<Navigate to="/auth" replace />} />
