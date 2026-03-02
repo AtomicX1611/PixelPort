@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 import HttpError from "../util/http-error.js";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
 export const authMiddleware = (req, res, next) => {
+  const JWT_SECRET = process.env.JWT_SECRET;
   if (!JWT_SECRET) {
     return next(new HttpError("Server misconfiguration: missing JWT secret", 500));
   }

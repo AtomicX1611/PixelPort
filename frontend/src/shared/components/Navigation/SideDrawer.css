@@ -2,12 +2,13 @@
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 100;
+  z-index: 200;
   height: 100vh;
-  width: 70%;
-  max-width: 320px;
-  background: #0f172a;
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  width: 280px;
+  max-width: 85vw;
+  background: var(--surface);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
+  border-right: 1px solid var(--border);
 }
 
 .slide-in-left-enter {
@@ -16,7 +17,7 @@
 
 .slide-in-left-enter-active {
   transform: translateX(0);
-  transition: transform 0.3s ease-out;
+  transition: transform 0.25s ease-out;
 }
 
 .slide-in-left-exit {
@@ -25,6 +26,5 @@
 
 .slide-in-left-exit-active {
   transform: translateX(-100%);
-  transition: transform 0.3s ease-in;
+  transition: transform 0.2s ease-in;
 }
-  

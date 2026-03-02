@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PlaceList from "../components/PlaceList";
 import useHttpClient from "../../shared/hooks/http-hook.js";
 
 const UserPlaces = () => {
   const userID = useParams().userId;
-  console.log("User Places called by ", userID);
   
   const [places, setPlaces] = useState([]);
-  const { loading, error, sendRequest, clearError } = useHttpClient();
+  const { sendRequest } = useHttpClient();
 
   useEffect(() => {
     const fetchPlaces = async () => {
@@ -17,12 +16,8 @@ const UserPlaces = () => {
           `http://localhost:5000/api/places/user/${userID}`
         );
 
-        console.log("Response : ", response);
         setPlaces(response.places || []);
-      } catch (err) {
-        console.log("Error : ",err)
-        console.log("Error occured");
-      }
+      } catch (err) {}
     };
 
     fetchPlaces();
@@ -33,13 +28,11 @@ const UserPlaces = () => {
   };
 
   return (
-    <React.Fragment>
-      <PlaceList 
-        list={places} 
-        userId={userID} 
-        onPlaceDeleted={placeDeletedHandler}
-      />
-    </React.Fragment>
+    <PlaceList 
+      list={places} 
+      userId={userID} 
+      onPlaceDeleted={placeDeletedHandler}
+    />
   );
 };
 

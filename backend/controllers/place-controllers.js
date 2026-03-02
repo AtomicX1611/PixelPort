@@ -42,7 +42,6 @@ const getPlaceById = async (req, res, next) => {
   try {
     place = await Place.findById(placeId).lean({ getters: true });
   } catch (err) {
-    console.log(err);
     return next(new HttpError("Error loading place", 500));
   }
 
@@ -63,12 +62,10 @@ const getPlacesByUserId = async (req, res, next) => {
     return res.status(200).json({ places: cached });
   }
 
-  console.log("Called getPlacesByUserId");
   let places;
   try {
     places = await Place.find({ creatorID: UserId }).lean({ getters: true });
   } catch (err) {
-    console.log("Error fetching places by user:", err.message);
     return next(new HttpError("Could not find places for this user", 500));
   }
 
@@ -83,7 +80,6 @@ const getPlacesByUserId = async (req, res, next) => {
 
 const createPlace = async (req, res, next) => {
   const { pid, title, desc, address } = req.body;
-  console.log("File path : ", req.file);
 
   if (!req.userData?.userId) {
     return next(new HttpError("Authentication required", 401));
@@ -100,7 +96,6 @@ const createPlace = async (req, res, next) => {
     return next(new HttpError("Invalid location data", 400));
   }
 
-  console.log("Creating Place called, body : ", req.body);
   const createdPlace = new Place({
     pid,
     title,
@@ -117,7 +112,7 @@ const createPlace = async (req, res, next) => {
   } catch {
     return next(new HttpError("Could not find user with given id", 404));
   }
-  console.log("Found user");
+
   try {
     const sess = await mongoose.startSession();
     await sess.startTransaction();
@@ -126,7 +121,6 @@ const createPlace = async (req, res, next) => {
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (error) {
-    console.log(error.message);
     return next(new HttpError("Error occurred while saving place", 500));
   }
 
@@ -140,7 +134,6 @@ const updatePlace = async (req, res, next) => {
   const placeID = req.params.pid;
   const { title, desc } = req.body;
 
-  console.log("Updating Place");
   let place;
   try {
     place = await Place.findById(placeID);
@@ -162,9 +155,7 @@ const updatePlace = async (req, res, next) => {
 
   try {
     await place.save();
-    console.log("Updating Place done");
   } catch (err) {
-    console.log("Error Occurred : ", err);
     return next(new HttpError("Could not save place", 500));
   }
 
@@ -205,12 +196,9 @@ const deletePlace = async (req, res, next) => {
 
     // Delete the image file
     fs.unlink(imagePath, err => {
-      if (err) {
-        console.log("Error deleting image file:", err);
-      }
+      if (err) console.error("Error deleting image file:", err);
     });
   } catch (err) {
-    console.log("Error during delete:", err);
     return next(new HttpError("Could not remove place", 500));
   }
   await deleteCacheByPrefix(`place:${placeID}`);
@@ -231,8 +219,6 @@ const getAllImages = async (req, res, next) => {
   }
 
   try {
-    console.log('Fetching places with pagination:', { page, limit, skipIndex });
-
     const places = await Place.find()
       .select('title desc imageUrl creatorID')
       .populate('creatorID')
@@ -242,48 +228,15 @@ const getAllImages = async (req, res, next) => {
       .lean({ getters: true });
 
     const totalPlaces = await Place.countDocuments();
-
-    console.log('Found places:', places.length);
-    if (places[0]) {
-      console.log('Sample place:', places[0]._id);
-    }
-
     const response = buildImagesResponse(places, page, limit, totalPlaces);
 
     await setCache(cacheKey, response, 120);
     return res.json(response);
-
   } catch (error) {
     console.error('Error in getAllImages:', error);
     return next(new HttpError("Couldn't get images: " + error.message, 500));
   }
 };
-
-// Baseline version without lean() or cache for A/B benchmarking
-const getAllImagesBaseline = async (req, res, next) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 12;
-  const skipIndex = (page - 1) * limit;
-
-  try {
-    const places = await Place.find()
-      .select('title desc imageUrl creatorID')
-      .populate('creatorID')
-      .sort({ _id: -1 })
-      .skip(skipIndex)
-      .limit(limit);
-
-    const totalPlaces = await Place.countDocuments();
-    const response = buildImagesResponse(places, page, limit, totalPlaces);
-    return res.json(response);
-  } catch (error) {
-    console.error('Error in getAllImagesBaseline:', error);
-    return next(new HttpError("Couldn't get images: " + error.message, 500));
-  }
-};
-
-// Optimized version kept for clarity; currently same as getAllImages
-const getAllImagesOptimized = getAllImages;
 
 export {
   getPlaceById,
@@ -292,6 +245,4 @@ export {
   updatePlace,
   deletePlace,
   getAllImages,
-  getAllImagesBaseline,
-  getAllImagesOptimized
 };

@@ -1,23 +1,26 @@
 .main-header {
   width: 100%;
-  height: 4rem;
+  height: var(--nav-height);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   position: fixed;
   top: 0;
   left: 0;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 0 1.5rem;
-  z-index: 50;
-  transition: all 0.3s ease;
+  padding: 0 1.25rem;
+  z-index: 100;
 }
 
 @media (min-width: 768px) {
   .main-header {
     padding: 0 2rem;
-    justify-content: space-between;
+  }
+}
+
+@media (min-width: 1200px) {
+  .main-header {
+    padding: 0 3rem;
   }
 }

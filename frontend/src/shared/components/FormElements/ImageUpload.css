@@ -21,8 +21,8 @@
 }
 
 .image-upload__preview:hover {
-  border-color: var(--brand);
-  background: var(--brand-light);
+  border-color: var(--primary);
+  background: var(--primary-light);
 }
 
 .image-upload__preview img {

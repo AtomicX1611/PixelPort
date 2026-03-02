@@ -19,7 +19,7 @@
 }
 
 .place-form button[type="submit"] {
-  background: var(--brand);
+  background: var(--primary);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -28,23 +28,20 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   font-family: inherit;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   width: 100%;
   margin-top: 1rem;
 }
 
 .place-form button[type="submit"]:hover {
-  background: var(--brand-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+  background: var(--primary-hover);
 }
 
 .place-form button[type="submit"]:disabled {
-  background: var(--border);
-  color: #94a3b8;
+  background: var(--surface-tertiary);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
 }
 
 @media (max-width: 768px) {

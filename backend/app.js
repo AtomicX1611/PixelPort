@@ -1,5 +1,4 @@
 import express from "express";
-import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import fs from "fs";
 import path from "path";
@@ -21,18 +20,8 @@ const app = express();
 
 app.use(cors());
 
-app.use(bodyParser.json());
+app.use(express.json());
 app.use("/uploads/images", express.static(path.join("uploads", "images")));
-
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
-  next();
-});
 
 app.use("/api/places", placeRouter);
 app.use("/api/users", userRouter);
@@ -66,26 +55,3 @@ mongoose
   .catch((error) => {
     console.error('MongoDB connection error:', error);
   });
-
-
-  // 'GET :- /api/users/ - getAllUsers.
-  // 'POST :- /api/users/signup - signUpUser 
-  // userModel -> 
-// const User = new Schema(
-//     {
-//           name : {type : String , required : true},
-//           email : {type : String , required : true, unique : true},
-//           password : {type : String , required : true},
-//           image : {type : String , required : true},
-//           places : [{type : mongoose.Types.ObjectId ,required : true , ref : 'Place'}]
-//     }
-// ) image should be from multer 
-// 'POST :- /api/users/login 
-
-// "GET -: api/places/user/:uid" - getallplacesforuserId
-// "GET "  api/places/:pi - getALlplaces
-// "POST - api/places/" -createPlace "user multer to to upload image"
-// "PATCH -: api/places/:pid" -updatePlace
-// "DELETE -: api/places/:pid"  - deletePlace
-
-//

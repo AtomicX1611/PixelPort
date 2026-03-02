@@ -1,6 +1,6 @@
 import Input from "../../shared/components/FormElements/Input.js";
 import Button from "../../shared/components/UiElements/Button.js";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./NewPlace.css";
 import { useForm } from "../../shared/hooks/form-hook.js";
@@ -13,7 +13,7 @@ import ImageUplaod from "../../shared/components/FormElements/ImageUpload.js";
 const NewPlace = () => {
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
-  const { loading, sendRequest, error, clearError } = useHttpClient();
+  const { sendRequest, error, clearError } = useHttpClient();
   const [formState, InputHandler] = useForm({
     title: { value: "", isValid: false },
     description: { value: "", isValid: false },
@@ -25,7 +25,6 @@ const NewPlace = () => {
     event.preventDefault();
     try {
       if (!formState.inputs.image?.value) {
-        console.log("No image selected");
         return;
       }
 
@@ -49,13 +48,11 @@ const NewPlace = () => {
 
       // Redirect to user's places page after successful creation
       navigate(`/${authContext.userId}/places`);
-    } catch (error) {
-      console.log("Couldn't add place: ", error);
-    }
+    } catch (error) {}
   };
 
   return (
-    <React.Fragment>
+    <>
       <ErrorModal error={error} onClear={clearError} />
       <form className="place-form" onSubmit={AddPlaceHandler}>
         <Input
@@ -88,7 +85,7 @@ const NewPlace = () => {
         <ImageUplaod center id="image" onInput={InputHandler}/>
         <Button type="submit" disabled={!formState.isValid}>ADD PLACE</Button>
       </form>
-    </React.Fragment>
+    </>
   );
 };
 

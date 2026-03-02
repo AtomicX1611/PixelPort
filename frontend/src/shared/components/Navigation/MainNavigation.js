@@ -33,9 +33,12 @@ const MainNavigation = (props) => {
           <span />
         </button>
         <h1 className="main-navigation__title">
-          <Link to="/">PixelPort</Link>
+          <Link to="/">
+            <span className="logo-icon">P</span>
+            PixelPort
+          </Link>
         </h1>
-        <nav className="nav_padding main-navigation__header-nav">
+        <nav className="main-navigation__header-nav">
           <NavLinks />
         </nav>
       </MainHeader>

@@ -6,20 +6,15 @@ import {
   getPlacesByUserId,
   updatePlace,
   getAllImages,
-  getAllImagesBaseline,
-  getAllImagesOptimized,
 } from "../controllers/place-controllers.js";
 import fileUpload from "../middlewares/fileUpload.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const placeRouter = express.Router();
 
-// Order matters: specific routes before parametric routes
-placeRouter.get("/images/baseline", getAllImagesBaseline);
-placeRouter.get("/images/optimized", getAllImagesOptimized);
-placeRouter.get("/images", getAllImagesOptimized);
+placeRouter.get("/images", getAllImages);
 placeRouter.get("/user/:uid", getPlacesByUserId); 
-placeRouter.get("/:pid", getPlaceById); // This should come last as it's a catch-all
+placeRouter.get("/:pid", getPlaceById);
 
 placeRouter.use(authMiddleware)
 

@@ -88,24 +88,23 @@
 }
 
 button.view-map-btn {
-  background: var(--brand);
+  background: var(--primary);
   color: white;
   border: none;
 }
 
 button.view-map-btn:hover {
-  background: var(--brand-hover);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+  background: var(--primary-hover);
 }
 
 button.edit-btn {
   background: transparent;
-  color: var(--brand);
-  border: 1px solid var(--brand);
+  color: var(--primary);
+  border: 1px solid var(--primary);
 }
 
 button.edit-btn:hover {
-  background: var(--brand-light);
+  background: var(--primary-light);
 }
 
 button.delete-btn {

@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import HttpError from "../util/http-error.js";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const getJwtSecret = () => process.env.JWT_SECRET;
 
 const getAllUsers = async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
@@ -62,8 +62,8 @@ const getAllUsers = async (req, res, next) => {
 
 const signUpUser = async (req, res, next) => {
   const { name, email, password } = req.body;
-  console.log("Calling signing up user : ", req.body);
 
+  const JWT_SECRET = getJwtSecret();
   if (!JWT_SECRET) {
     return next(new HttpError("Server misconfiguration: missing JWT secret", 500));
   }
@@ -100,7 +100,6 @@ const signUpUser = async (req, res, next) => {
 
     return res.status(201).json({ userId: user.id, token });
   } catch (error) {
-    console.log("Error creating user:", error.message);
     return next(new HttpError("Something went wrong while creating user", 500));
   }
 };
@@ -108,6 +107,7 @@ const signUpUser = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
+  const JWT_SECRET = getJwtSecret();
   if (!JWT_SECRET) {
     return next(new HttpError("Server misconfiguration: missing JWT secret", 500));
   }
@@ -133,7 +133,6 @@ const loginUser = async (req, res, next) => {
 
     return res.json({ message: "User logged in", token, userId: user.id });
   } catch (error) {
-    console.log("Login error:", error.message);
     return next(new HttpError("Could not log in user", 500));
   }
 };

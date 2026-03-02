@@ -1,148 +1,66 @@
-.users-list-container {
-  width: 100%;
-  overflow: hidden;
-  padding: 1rem 0;
-}
-
-.users-list {
+/* User Card */
+.user-card {
   display: flex;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  gap: 1.25rem;
-  padding: 0.5rem 1rem;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.users-list::-webkit-scrollbar {
-  display: none;
-}
-
-.user-item {
-  display: flex;
-  flex-direction: column;
   align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   text-decoration: none;
   color: inherit;
-  min-width: 90px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: all 0.15s ease;
 }
 
-.user-item:hover {
-  transform: translateY(-3px);
+.user-card:hover {
+  border-color: var(--text-muted);
+  box-shadow: var(--shadow-sm);
 }
 
-.user-avatar {
-  width: 80px;
-  height: 80px;
+.user-card__avatar {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   overflow: hidden;
-  margin-bottom: 0.5rem;
-  border: 2px solid var(--border);
-  transition: border-color 0.2s ease;
+  flex-shrink: 0;
+  background: var(--surface-tertiary);
 }
 
-.user-item:hover .user-avatar {
-  border-color: var(--brand);
-}
-
-.user-image {
+.user-card__avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.user-name {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  text-align: center;
-  max-width: 90px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--text-secondary);
+.user-card__info {
+  flex: 1;
+  min-width: 0;
 }
 
-.no-users {
-  text-align: center;
-  padding: 2rem;
-  color: var(--text-secondary);
-  font-size: 0.9375rem;
-}
-
-.users-container {
-  padding: 1.5rem;
-  max-width: 100%;
-}
-
-.users-title {
-  margin-bottom: 1.25rem;
-  font-size: 1.25rem;
+.user-card__name {
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  line-height: 1.3;
 }
 
-.horizontal-scroll-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  padding-bottom: 0.5rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+.user-card__places {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 400;
 }
 
-.horizontal-scroll-wrapper::-webkit-scrollbar {
-  height: 6px;
-}
-
-.horizontal-scroll-wrapper::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 3px;
-}
-
-.horizontal-scroll-wrapper::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
-}
-
-.horizontal-scroll-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-.horizontal-user-list {
-  display: flex;
-  gap: 1rem;
-  padding: 0.5rem 0;
-  min-width: max-content;
-}
-
-.user-card {
+.user-card__arrow {
+  color: var(--text-muted);
   flex-shrink: 0;
-  min-width: 130px;
-  max-width: 180px;
-  transition: transform 0.2s ease;
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
 
-.user-card:hover {
-  transform: translateY(-2px);
+.user-card:hover .user-card__arrow {
+  opacity: 1;
 }
-
-@media (max-width: 768px) {
-  .users-container {
-    padding: 1rem;
-  }
-
-  .user-card {
-    min-width: 120px;
-    max-width: 160px;
-  }
-}
-
-@media (max-width: 480px) {
-  .user-card {
-    min-width: 100px;
-    max-width: 140px;
-  }
-}
-

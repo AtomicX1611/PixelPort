@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Route,
   Routes,
@@ -37,7 +37,6 @@ const App = () => {
       })
     );
     setuserId(user_id);
-    console.log("Logging in");
   }, []);
 
   const logout = useCallback(() => {
@@ -45,14 +44,12 @@ const App = () => {
     setExpirationDate(null);
     setuserId(null);
     localStorage.removeItem("userData");
-    console.log("Logging out");
   }, []);
 
   useEffect(() => {
     if (token && expirationDate) {
       const reaminingTime = expirationDate - new Date().getTime();
       logoutTimer = setTimeout(logout, reaminingTime);
-      console.log("setting timeout here : infinite loop 1");
     } else {
       clearTimeout(logoutTimer);
     }
@@ -65,8 +62,6 @@ const App = () => {
       storedData.token &&
       new Date(storedData.expiration) > new Date()
     ) {
-      console.log("Calling log in here ,infinite loop 2");
-
       login(
         storedData.user_id,
         storedData.token,

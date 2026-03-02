@@ -1,9 +1,9 @@
 .button {
   font: inherit;
   padding: 0.5625rem 1.25rem;
-  border: 1.5px solid var(--brand);
+  border: 1.5px solid var(--primary);
   border-radius: var(--radius-md);
-  background: var(--brand);
+  background: var(--primary);
   color: white;
   cursor: pointer;
   text-decoration: none;
@@ -13,33 +13,33 @@
   gap: 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   line-height: 1.5;
 }
 
 .button:focus {
   outline: none;
-  box-shadow: 0 0 0 3px var(--brand-ring);
+  box-shadow: 0 0 0 3px var(--primary-ring);
 }
 
 .button:hover,
 .button:active {
-  background: var(--brand-hover);
-  border-color: var(--brand-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  transform: none;
+  box-shadow: none;
 }
 
 .button--inverse {
   background: transparent;
-  color: var(--brand);
+  color: var(--primary);
 }
 
 .button--inverse:hover,
 .button--inverse:active {
-  background: var(--brand-light);
-  color: var(--brand-hover);
-  border-color: var(--brand-hover);
+  background: var(--primary-light);
+  color: var(--primary-hover);
+  border-color: var(--primary-hover);
   box-shadow: none;
   transform: none;
 }

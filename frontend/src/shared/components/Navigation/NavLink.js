@@ -15,8 +15,8 @@ const NavLinks = () => {
   return (
     <ul className="nav-links">
       <li>
-        <Link to="/" exact>
-          All Users
+        <Link to="/">
+          Explore
         </Link>
       </li>
       {auth.isLoggedIn && (
@@ -36,7 +36,7 @@ const NavLinks = () => {
       )}
       {!auth.isLoggedIn && (
         <li>
-          <Link to="/auth">Auth</Link>
+          <Link to="/auth">Sign In</Link>
         </li>
       )}
     </ul>

@@ -1,11 +1,9 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext.js";
 import { useNavigate } from "react-router-dom";
 
 import { VALIDATOR_REQUIRE } from "../../shared/utils/validator.js";
 import "./Auth.modern.css";
-import { motion } from "framer-motion";
-import Card from "../../shared/components/UiElements/Card.js";
 import Button from "../../shared/components/UiElements/Button.js";
 import { useForm } from "../../shared/hooks/form-hook.js";
 import Input from "../../shared/components/FormElements/Input";
@@ -41,7 +39,6 @@ const Auth = () => {
 
   const authSubmitHandler = async (event) => {
     event.preventDefault();
-    console.log("FormState : ", formState.inputs);
     if (!formState.inputs.email.value || !formState.inputs.password.value) {
       return;
     }
@@ -60,12 +57,9 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        console.log("Logging in user,", response);
         auth.login(response.userId, response.token);
         navigate("/");
-      } catch (error) {
-        console.log("Some error is occurring : ", error);
-      }
+      } catch (error) {}
     } else {
       try {
         if (!formState.inputs.image.value) {
@@ -83,9 +77,7 @@ const Auth = () => {
         );
         auth.login(response.userId, response.token);
         navigate("/");
-      } catch (err) {
-        console.log("Some ", err);
-      }
+      } catch (err) {}
     }
   };
 
@@ -135,27 +127,12 @@ const Auth = () => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <ErrorModal error={error} onClear={clearError} />
-      <motion.div 
-        className="authentication"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-      >
-        <motion.div 
-          className="authentication-container"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-        >
+      <div className="authentication">
+        <div className="authentication-container">
           {loading && <LoadingSpinner asOverlay />}
-          <motion.div
-            className="auth-header"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
+          <div className="auth-header">
             <h2>{isLogin ? "Welcome Back!" : "Create Account"}</h2>
             <p>
               {isLogin 
@@ -163,14 +140,11 @@ const Auth = () => {
                 : "Join our community and share amazing places"
               }
             </p>
-          </motion.div>
+          </div>
           
-          <motion.form 
+          <form 
             className="auth-form"
             onSubmit={authSubmitHandler}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
           >
             {!isLogin && (
               <div className="form-control">
@@ -201,19 +175,14 @@ const Auth = () => {
             </div>
             
             {!isLogin && (
-              <motion.div 
-                className="image-upload-container"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-              >
+              <div className="image-upload-container">
                 <ImageUplaod
                   center
                   id="image"
                   onInput={InputHandler}
                   errorText="Please provide a profile image"
                 />
-              </motion.div>
+              </div>
             )}
             
             <div className="form-control">
@@ -236,14 +205,9 @@ const Auth = () => {
             >
               {isLogin ? "Sign In" : "Create Account"}
             </Button>
-          </motion.form>
+          </form>
 
-          <motion.div 
-            className="auth-footer"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-          >
+          <div className="auth-footer">
             <Button
               type="button"
               onClick={switchModeHandler}
@@ -254,10 +218,10 @@ const Auth = () => {
                 ? "Don't have an account? Sign up"
                 : "Already have an account? Sign in"}
             </Button>
-          </motion.div>
-        </motion.div>
-      </motion.div>
-    </React.Fragment>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

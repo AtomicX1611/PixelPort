@@ -54,7 +54,6 @@ export const useForm = (input) => {
   );
 
   const setFormState = useCallback((inputData) => {
-    console.log("Setting form data:", inputData);
     let formValid = true;
     for (const input in inputData) {
       if (inputData[input]?.isValid === false) {

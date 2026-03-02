@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import Card from "../../shared/components/UiElements/Card.js";
 import "./PlaceItem.css";
 import Button from "../../shared/components/UiElements/Button.js";
@@ -6,12 +6,10 @@ import Modal from "../../shared/components/UiElements/Modal.js";
 import GMap from "../../shared/components/UiElements/Map.js";
 import { AuthContext } from "../../context/AuthContext.js";
 import useHttpClient from "../../shared/hooks/http-hook.js";
-import { useNavigate } from "react-router-dom";
 
 const PlaceItem = (props) => {
   const auth = useContext(AuthContext);
   const { sendRequest } = useHttpClient();
-  const navigate = useNavigate();
   const [gMap, setGMap] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
@@ -45,13 +43,11 @@ const PlaceItem = (props) => {
         }
       );
       props.onDelete(props.id);
-    } catch (err) {
-      console.log("Error deleting place:", err);
-    }
+    } catch (err) {}
   };
 
   return (
-    <React.Fragment>
+    <>
       <Modal
         show={gMap}
         onCancel={closeMap}
@@ -70,10 +66,10 @@ const PlaceItem = (props) => {
         header="Are you sure?"
         footerClass="place-item__modal-actions"
         footer={
-          <React.Fragment>
+          <>
             <Button inverse onClick={cancelDeleteHandler}>CANCEL</Button>
             <Button danger onClick={confirmDeleteHandler}>DELETE</Button>
-          </React.Fragment>
+          </>
         }
       >
         <p>
@@ -115,7 +111,7 @@ const PlaceItem = (props) => {
           </div>
         </Card>
       </li>
-    </React.Fragment>
+    </>
   );
 };
 

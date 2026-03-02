@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import Card from "../../shared/components/UiElements/Card";
+import { useContext } from "react";
 import PlaceItem from "./PlaceItem"; 
 import "./PLaceList.css";
 import { AuthContext } from "../../context/AuthContext";
