@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import Card from "../../shared/components/UiElements/Card.js";
 import "./PlaceItem.css";
 import Button from "../../shared/components/UiElements/Button.js";
@@ -12,6 +13,9 @@ const PlaceItem = (props) => {
   const { sendRequest } = useHttpClient();
   const [gMap, setGMap] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const images = props.images || (props.image ? [props.image] : []);
+  const thumbnail = images[0] || '';
 
   const closeMap = (e) => {
     setGMap(false);
@@ -79,14 +83,24 @@ const PlaceItem = (props) => {
       </Modal>
       <li className="place-item">
         <Card className="place-item__content">
-          <div className="place-item__image">
-            <img src={`http://localhost:5000/${props.image}`} alt={props.title} />
-          </div>
-          <div className="place-item__info">
-            <h2>{props.title}</h2>
-            <h3>{props.address}</h3>
-            <p>{props.desc}</p>
-          </div>
+          <Link to={`/post/${props.id}`} className="place-item__link">
+            <div className="place-item__image">
+              <img src={`http://localhost:5000/${thumbnail}`} alt={props.title} />
+              {images.length > 1 && (
+                <span className="place-item__img-count">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  {images.length}
+                </span>
+              )}
+            </div>
+            <div className="place-item__info">
+              <h2>{props.title}</h2>
+              <h3>{props.address}</h3>
+              <p>{props.desc}</p>
+            </div>
+          </Link>
           <div className="place-item__actions">
             <Button className="view-map-btn" onClick={openMap}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">

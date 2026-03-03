@@ -18,7 +18,7 @@ placeRouter.get("/:pid", getPlaceById);
 
 placeRouter.use(authMiddleware)
 
-placeRouter.post("/",fileUpload.single("image"), createPlace);  
+placeRouter.post("/",fileUpload.array("images", 10), createPlace);  
 placeRouter.patch("/:pid", updatePlace); 
 placeRouter.delete("/:pid", deletePlace); 
 

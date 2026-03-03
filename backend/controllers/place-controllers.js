@@ -5,27 +5,32 @@ import fs from "fs";
 import HttpError from "../util/http-error.js";
 import { getCache, setCache, deleteCacheByPrefix } from "../util/cache.js";
 
-// Helper to shape image responses consistently
-const buildImagesResponse = (places, page, limit, totalPlaces) => {
+// Helper to shape post responses consistently for Explore/listing pages
+const buildPostsResponse = (places, page, limit, totalPlaces) => {
   const hasMore = (page - 1) * limit + places.length < totalPlaces;
-  const images = places.map(place => ({
-    id: place._id,
-    title: place.title || '',
-    description: place.desc || '',
-    path: place.imageUrl || '',
-    creator: place.creatorID ? {
-      id: place.creatorID._id,
-      name: place.creatorID.name || 'Unknown',
-      image: place.creatorID.image || ''
-    } : null
-  }));
+  const posts = places.map(place => {
+    const imgs = place.images || (place.imageUrl ? [place.imageUrl] : []);
+    return {
+      id: place._id,
+      title: place.title || '',
+      description: place.desc || '',
+      thumbnail: imgs[0] || '',
+      imageCount: imgs.length,
+      address: place.address || '',
+      creator: place.creatorID ? {
+        id: place.creatorID._id,
+        name: place.creatorID.name || 'Unknown',
+        image: place.creatorID.image || ''
+      } : null
+    };
+  });
 
   return {
-    images,
+    posts,
     currentPage: page,
     totalPages: Math.ceil(totalPlaces / limit),
     hasMore,
-    totalImages: totalPlaces
+    totalPosts: totalPlaces
   };
 };
 
@@ -40,13 +45,21 @@ const getPlaceById = async (req, res, next) => {
 
   let place;
   try {
-    place = await Place.findById(placeId).lean({ getters: true });
+    place = await Place.findById(placeId)
+      .populate('creatorID', 'name image')
+      .lean({ virtuals: true, getters: true });
   } catch (err) {
     return next(new HttpError("Error loading place", 500));
   }
 
   if (!place) {
     return next(new HttpError("Could not find a place with the given id", 404));
+  }
+
+  // Normalize legacy single-image docs
+  if (!place.images || place.images.length === 0) {
+    if (place.imageUrl) place.images = [place.imageUrl];
+    else place.images = [];
   }
 
   await setCache(cacheKey, place);
@@ -64,7 +77,7 @@ const getPlacesByUserId = async (req, res, next) => {
 
   let places;
   try {
-    places = await Place.find({ creatorID: UserId }).lean({ getters: true });
+    places = await Place.find({ creatorID: UserId }).lean({ virtuals: true, getters: true });
   } catch (err) {
     return next(new HttpError("Could not find places for this user", 500));
   }
@@ -85,8 +98,8 @@ const createPlace = async (req, res, next) => {
     return next(new HttpError("Authentication required", 401));
   }
 
-  if (!req.file) {
-    return next(new HttpError("No image file provided", 400));
+  if (!req.files || req.files.length === 0) {
+    return next(new HttpError("At least one image is required", 400));
   }
 
   let location;
@@ -96,13 +109,15 @@ const createPlace = async (req, res, next) => {
     return next(new HttpError("Invalid location data", 400));
   }
 
+  const imagePaths = req.files.map(f => f.path.replace(/\\/g, '/'));
+
   const createdPlace = new Place({
     pid,
     title,
     desc,
     address,
     creatorID: req.userData.userId,
-    imageUrl: req.file.path,
+    images: imagePaths,
     location,
   });
 
@@ -110,6 +125,10 @@ const createPlace = async (req, res, next) => {
   try {
     user = await User.findById(req.userData.userId);
   } catch {
+    return next(new HttpError("Could not find user with given id", 404));
+  }
+
+  if (!user) {
     return next(new HttpError("Could not find user with given id", 404));
   }
 
@@ -121,6 +140,7 @@ const createPlace = async (req, res, next) => {
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (error) {
+    console.error("Error saving place:", error);
     return next(new HttpError("Error occurred while saving place", 500));
   }
 
@@ -186,7 +206,7 @@ const deletePlace = async (req, res, next) => {
   }
 
   try {
-    const imagePath = place.imageUrl;
+    const imagePaths = place.images || (place.imageUrl ? [place.imageUrl] : []);
     const sess = await mongoose.startSession();
     await sess.startTransaction();
     await place.deleteOne({ session: sess });
@@ -194,10 +214,12 @@ const deletePlace = async (req, res, next) => {
     await place.creatorID.save({ session: sess });
     await sess.commitTransaction();
 
-    // Delete the image file
-    fs.unlink(imagePath, err => {
-      if (err) console.error("Error deleting image file:", err);
-    });
+    // Delete all image files
+    for (const imgPath of imagePaths) {
+      fs.unlink(imgPath, err => {
+        if (err) console.error("Error deleting image file:", err);
+      });
+    }
   } catch (err) {
     return next(new HttpError("Could not remove place", 500));
   }
@@ -225,15 +247,15 @@ const getAllImages = async (req, res, next) => {
       : {};
 
     const places = await Place.find(filter)
-      .select('title desc imageUrl creatorID address')
+      .select('title desc images creatorID address')
       .populate('creatorID', 'name image')
       .sort({ _id: -1 })
       .skip(skipIndex)
       .limit(limit)
-      .lean({ getters: true });
+      .lean({ virtuals: true, getters: true });
 
     const totalPlaces = await Place.countDocuments(filter);
-    const response = buildImagesResponse(places, page, limit, totalPlaces);
+    const response = buildPostsResponse(places, page, limit, totalPlaces);
 
     await setCache(cacheKey, response, 120);
     return res.json(response);

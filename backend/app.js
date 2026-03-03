@@ -36,6 +36,13 @@ app.use((error, req, res, next) => {
       console.log(err);
     });
   }
+  if (req.files) {
+    for (const file of req.files) {
+      fs.unlink(file.path, (err) => {
+        if (err) console.log(err);
+      });
+    }
+  }
   if (res.headerSent) {
     return next(error);
   }

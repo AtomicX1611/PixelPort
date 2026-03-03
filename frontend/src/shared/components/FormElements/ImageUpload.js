@@ -5,39 +5,55 @@ import Button from "../UiElements/Button.js";
 
 const ImageUplaod = (props) => {
   const filePickerRef = useRef();
-  const [file, setFile] = useState();
-  const [preview, setPreview] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [previews, setPreviews] = useState([]);
   const [isValid, setIsValid] = useState(false);
+  const multiple = props.multiple || false;
 
   const pickImageHandler = () => {
     filePickerRef.current.click();
   };
 
   useEffect(() => {
-    if (!file) {
+    if (files.length === 0) {
+      setPreviews([]);
+      return;
+    }
+    const urls = [];
+    let loaded = 0;
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        urls.push(reader.result);
+        loaded++;
+        if (loaded === files.length) {
+          setPreviews([...urls]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }, [files]);
+
+  const pickedHandler = (event) => {
+    const picked = event.target.files;
+    if (!picked || picked.length === 0) {
+      setIsValid(false);
+      props.onInput(props.id, multiple ? [] : null, false);
       return;
     }
 
-    const fileReader = new FileReader();
-    fileReader.onload = () => {
-        setPreview(fileReader.result)
-    }
-    fileReader.readAsDataURL(file)
-  }, [file]);
+    const fileArray = Array.from(picked);
+    setFiles(fileArray);
+    setIsValid(true);
+    props.onInput(props.id, multiple ? fileArray : fileArray[0], true);
+  };
 
-  const pickedHandler = (event) => {
-    let fileIsValid = isValid;
-    let pickedFile;
-    if (event.target.files && event.target.files.length === 1) {
-      pickedFile = event.target.files[0];
-      setFile(pickedFile);
-      setIsValid(true);
-      fileIsValid = true;
-    } else {
-      setIsValid(!isValid);
-      fileIsValid = false;
-    }
-     props.onInput(props.id, pickedFile, fileIsValid);
+  const removeImage = (index) => {
+    const updated = files.filter((_, i) => i !== index);
+    setFiles(updated);
+    const valid = updated.length > 0;
+    setIsValid(valid);
+    props.onInput(props.id, multiple ? updated : updated[0] || null, valid);
   };
 
   return (
@@ -48,15 +64,33 @@ const ImageUplaod = (props) => {
         ref={filePickerRef}
         style={{ display: "none" }}
         accept=".jpeg,.png,.jpg"
+        multiple={multiple}
         onChange={pickedHandler}
       />
       <div className={`image-upload ${props.center && "center"}`}>
-        <div className="image-upload__preview">
-         {preview ? <img src={`${preview}`} alt="Preview" /> : <p>Please Upload a Image</p>}
-         
-        </div>
+        {previews.length > 0 ? (
+          <div className="image-upload__previews">
+            {previews.map((src, i) => (
+              <div className="image-upload__preview-item" key={i}>
+                <img src={src} alt={`Preview ${i + 1}`} />
+                <button
+                  type="button"
+                  className="image-upload__remove"
+                  onClick={() => removeImage(i)}
+                  title="Remove"
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="image-upload__preview">
+            <p>{multiple ? "Upload Images" : "Upload an Image"}</p>
+          </div>
+        )}
         <Button type="button" onClick={pickImageHandler}>
-          UPLOAD IMAGE
+          {multiple ? "SELECT IMAGES" : "UPLOAD IMAGE"}
         </Button>
       </div>
     </div>

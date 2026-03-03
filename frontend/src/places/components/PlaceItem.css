@@ -19,11 +19,32 @@
   box-shadow: var(--shadow-md);
 }
 
+.place-item__link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
 .place-item__image {
   width: 100%;
   height: 200px;
   position: relative;
   overflow: hidden;
+}
+
+.place-item__img-count {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .place-item__image img {

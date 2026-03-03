@@ -43,6 +43,7 @@ const PlaceList = ({ list, userId, onPlaceDeleted }) => {
           key={place._id}
           id={place._id}
           image={place.imageUrl}
+          images={place.images}
           title={place.title}
           description={place.desc}
           address={place.address}

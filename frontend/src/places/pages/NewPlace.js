@@ -18,13 +18,14 @@ const NewPlace = () => {
     title: { value: "", isValid: false },
     description: { value: "", isValid: false },
     address: { value: "", isValid: false },
-    image: { value: null, isValid: false },
+    images: { value: [], isValid: false },
   });
 
   const AddPlaceHandler = async (event) => {
     event.preventDefault();
     try {
-      if (!formState.inputs.image?.value) {
+      const imageFiles = formState.inputs.images?.value;
+      if (!imageFiles || imageFiles.length === 0) {
         return;
       }
 
@@ -33,7 +34,9 @@ const NewPlace = () => {
       formData.append("desc", formState.inputs.description.value);
       formData.append("address", formState.inputs.address.value);
       formData.append("creatorID", authContext.userId);
-      formData.append("image", formState.inputs.image.value);
+      for (const file of imageFiles) {
+        formData.append("images", file);
+      }
       formData.append("location", JSON.stringify({ lng: 74.001, lat: 40.712 }));
       formData.append("pid", "100");
 
@@ -82,7 +85,7 @@ const NewPlace = () => {
           error="Please enter valid Address"
           onInput={InputHandler}
         />
-        <ImageUplaod center id="image" onInput={InputHandler}/>
+        <ImageUplaod center multiple id="images" onInput={InputHandler}/>
         <Button type="submit" disabled={!formState.isValid}>ADD PLACE</Button>
       </form>
     </>

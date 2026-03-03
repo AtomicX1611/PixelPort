@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { Link } from "react-router-dom";
 import useHttpClient from "../../shared/hooks/http-hook.js";
 import LoadingSpinner from "../../shared/components/UiElements/LoadingSpinner.js";
 import ErrorModal from "../../shared/components/UiElements/ErrorModal.js";
@@ -6,12 +7,12 @@ import "./Explore.css";
 
 const Explore = () => {
   const { loading, error, sendRequest, clearError } = useHttpClient();
-  const [images, setImages] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [totalImages, setTotalImages] = useState(0);
+  const [totalPosts, setTotalPosts] = useState(0);
   const [initialLoad, setInitialLoad] = useState(true);
   const observer = useRef();
   const searchInputRef = useRef();
@@ -26,13 +27,13 @@ const Explore = () => {
 
   // Reset when search changes
   useEffect(() => {
-    setImages([]);
+    setPosts([]);
     setPage(1);
     setHasMore(true);
   }, [debouncedSearch]);
 
-  // Fetch images
-  const fetchImages = useCallback(async () => {
+  // Fetch posts
+  const fetchPosts = useCallback(async () => {
     try {
       const searchParam = debouncedSearch
         ? `&search=${encodeURIComponent(debouncedSearch)}`
@@ -40,17 +41,16 @@ const Explore = () => {
       const responseData = await sendRequest(
         `http://localhost:5000/api/places/images?page=${page}&limit=12${searchParam}`
       );
-      setImages((prev) => {
-        if (page === 1) return responseData.images;
-        // Prevent duplicates on re-renders
-        const existingIds = new Set(prev.map((img) => img.id));
-        const newImages = responseData.images.filter(
-          (img) => !existingIds.has(img.id)
+      setPosts((prev) => {
+        if (page === 1) return responseData.posts;
+        const existingIds = new Set(prev.map((p) => p.id));
+        const newPosts = responseData.posts.filter(
+          (p) => !existingIds.has(p.id)
         );
-        return [...prev, ...newImages];
+        return [...prev, ...newPosts];
       });
       setHasMore(responseData.hasMore);
-      setTotalImages(responseData.totalImages);
+      setTotalPosts(responseData.totalPosts);
       setInitialLoad(false);
     } catch (err) {
       setInitialLoad(false);
@@ -58,11 +58,11 @@ const Explore = () => {
   }, [sendRequest, page, debouncedSearch]);
 
   useEffect(() => {
-    fetchImages();
-  }, [fetchImages]);
+    fetchPosts();
+  }, [fetchPosts]);
 
   // Infinite scroll with Intersection Observer
-  const lastImageRef = useCallback(
+  const lastPostRef = useCallback(
     (node) => {
       if (loading) return;
       if (observer.current) observer.current.disconnect();
@@ -139,7 +139,7 @@ const Explore = () => {
           </div>
           {!initialLoad && (
             <p className="explore-hero__count">
-              {totalImages} {totalImages === 1 ? "place" : "places"} found
+              {totalPosts} {totalPosts === 1 ? "post" : "posts"} found
               {debouncedSearch && (
                 <span>
                   {" "}
@@ -153,13 +153,13 @@ const Explore = () => {
 
       <ErrorModal error={error} onClear={clearError} />
 
-      {/* Image Grid */}
+      {/* Posts Grid */}
       <div className="explore-content">
         {initialLoad && loading ? (
           <div className="explore-loading">
             <LoadingSpinner />
           </div>
-        ) : images.length === 0 && !loading ? (
+        ) : posts.length === 0 && !loading ? (
           <div className="explore-empty">
             <div className="explore-empty__icon">
               <svg
@@ -178,7 +178,7 @@ const Explore = () => {
                 />
               </svg>
             </div>
-            <h3>No places found</h3>
+            <h3>No posts found</h3>
             <p>
               {debouncedSearch
                 ? "Try a different search term"
@@ -187,46 +187,55 @@ const Explore = () => {
           </div>
         ) : (
           <div className="explore-grid">
-            {images.map((image, index) => {
-              const isLast = index === images.length - 1;
+            {posts.map((post, index) => {
+              const isLast = index === posts.length - 1;
               return (
-                <div
+                <Link
+                  to={`/post/${post.id}`}
                   className="explore-card"
-                  key={image.id}
-                  ref={isLast ? lastImageRef : null}
+                  key={post.id}
+                  ref={isLast ? lastPostRef : null}
                 >
                   <div className="explore-card__image">
                     <img
-                      src={`http://localhost:5000/${image.path}`}
-                      alt={image.title}
+                      src={`http://localhost:5000/${post.thumbnail}`}
+                      alt={post.title}
                       loading="lazy"
                     />
+                    {post.imageCount > 1 && (
+                      <span className="explore-card__count">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {post.imageCount}
+                      </span>
+                    )}
                   </div>
                   <div className="explore-card__body">
-                    <h3 className="explore-card__title">{image.title}</h3>
-                    {image.description && (
-                      <p className="explore-card__desc">{image.description}</p>
+                    <h3 className="explore-card__title">{post.title}</h3>
+                    {post.description && (
+                      <p className="explore-card__desc">{post.description}</p>
                     )}
-                    {image.creator && (
+                    {post.creator && (
                       <div className="explore-card__creator">
-                        {image.creator.image ? (
+                        {post.creator.image ? (
                           <img
-                            src={`http://localhost:5000/${image.creator.image}`}
-                            alt={image.creator.name}
+                            src={`http://localhost:5000/${post.creator.image}`}
+                            alt={post.creator.name}
                             className="explore-card__avatar"
                           />
                         ) : (
                           <div className="explore-card__avatar explore-card__avatar--placeholder">
-                            {image.creator.name?.charAt(0)?.toUpperCase()}
+                            {post.creator.name?.charAt(0)?.toUpperCase()}
                           </div>
                         )}
                         <span className="explore-card__creator-name">
-                          {image.creator.name}
+                          {post.creator.name}
                         </span>
                       </div>
                     )}
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
@@ -240,8 +249,8 @@ const Explore = () => {
         )}
 
         {/* End of results */}
-        {!hasMore && images.length > 0 && (
-          <p className="explore-end">You've seen all the places!</p>
+        {!hasMore && posts.length > 0 && (
+          <p className="explore-end">You've seen all the posts!</p>
         )}
       </div>
     </div>
