@@ -1,11 +1,35 @@
+.new-place-page {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.new-place-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.new-place-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.new-place-header p {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+
 .place-form {
   list-style: none;
-  margin: 2rem auto;
+  margin: 0 auto;
   padding: 2rem;
-  width: 90%;
-  max-width: 36rem;
-  background: white;
-  border-radius: var(--radius-lg);
+  width: 100%;
+  background: var(--surface);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border);
 }
@@ -47,6 +71,9 @@
 @media (max-width: 768px) {
   .place-form {
     padding: 1.5rem;
-    margin: 1rem auto;
+  }
+
+  .new-place-page {
+    padding: 1.5rem 1rem 3rem;
   }
 }

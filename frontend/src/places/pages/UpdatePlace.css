@@ -1,0 +1,102 @@
+/* ===== UPDATE PLACE PAGE ===== */
+.update-place-page {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.update-place-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.update-place-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.update-place-header p {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+
+.update-place-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.update-place-actions .button {
+  flex: 1;
+}
+
+/* Loading */
+.update-place-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+}
+
+/* Not Found */
+.update-place-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+  padding: 2rem;
+}
+
+.update-place-not-found__icon {
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.update-place-not-found h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.update-place-not-found p {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  margin-bottom: 1.5rem;
+}
+
+.update-place-not-found .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.update-place-not-found .btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  .update-place-page {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .update-place-actions {
+    flex-direction: column;
+  }
+}

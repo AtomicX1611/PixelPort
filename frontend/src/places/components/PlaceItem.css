@@ -4,7 +4,7 @@
 }
 
 .place-item__content {
-  background: white;
+  background: var(--surface);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -154,7 +154,7 @@ button.delete-btn:hover {
 .place-item__modal-actions {
   padding: 1rem;
   text-align: right;
-  background: white;
+  background: var(--surface);
 }
 
 @media (min-width: 768px) {

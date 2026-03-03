@@ -7,12 +7,15 @@ import { useForm } from "../../shared/hooks/form-hook.js";
 import { VALIDATOR_REQUIRE } from "../../shared/utils/validator.js";
 import useHttpClient from "../../shared/hooks/http-hook.js";
 import { AuthContext } from "../../context/AuthContext.js";
+import { ToastContext } from "../../context/ToastContext.js";
 import ErrorModal from "../../shared/components/UiElements/ErrorModal.js";
 import ImageUplaod from "../../shared/components/FormElements/ImageUpload.js";
+import PageTransition from "../../shared/components/UiElements/PageTransition.js";
 
 const NewPlace = () => {
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
+  const { showToast } = useContext(ToastContext);
   const { sendRequest, error, clearError } = useHttpClient();
   const [formState, InputHandler] = useForm({
     title: { value: "", isValid: false },
@@ -26,6 +29,7 @@ const NewPlace = () => {
     try {
       const imageFiles = formState.inputs.images?.value;
       if (!imageFiles || imageFiles.length === 0) {
+        showToast("Please upload at least one image", "warning");
         return;
       }
 
@@ -49,46 +53,62 @@ const NewPlace = () => {
         }
       );
 
-      // Redirect to user's places page after successful creation
+      showToast("Place created successfully!", "success");
       navigate(`/${authContext.userId}/places`);
-    } catch (error) {}
+    } catch (error) {
+      showToast("Failed to create place", "error");
+    }
   };
 
   return (
-    <>
+    <PageTransition>
       <ErrorModal error={error} onClear={clearError} />
-      <form className="place-form" onSubmit={AddPlaceHandler}>
-        <Input
-          id="title"
-          element="input"
-          type="text"
-          label="Title"
-          error="Please enter valid text"
-          validators={[VALIDATOR_REQUIRE()]}
-          onInput={InputHandler}
-        />
-        <Input
-          id="description"
-          element="textarea"
-          type="text"
-          label="Description"
-          validators={[VALIDATOR_REQUIRE()]}
-          error="Please enter valid Description"
-          onInput={InputHandler}
-        />
-        <Input
-          id="address"
-          element="input"
-          type="text"
-          label="Address"
-          validators={[VALIDATOR_REQUIRE()]}
-          error="Please enter valid Address"
-          onInput={InputHandler}
-        />
-        <ImageUplaod center multiple id="images" onInput={InputHandler}/>
-        <Button type="submit" disabled={!formState.isValid}>ADD PLACE</Button>
-      </form>
-    </>
+      <div className="new-place-page">
+        <div className="new-place-header">
+          <h1>Share a New Place</h1>
+          <p>Tell the community about an amazing spot you've discovered</p>
+        </div>
+        <form className="place-form" onSubmit={AddPlaceHandler}>
+          <Input
+            id="title"
+            element="input"
+            type="text"
+            label="Title"
+            placeholder="e.g. Eiffel Tower"
+            error="Please enter valid text"
+            validators={[VALIDATOR_REQUIRE()]}
+            onInput={InputHandler}
+          />
+          <Input
+            id="description"
+            element="textarea"
+            type="text"
+            label="Description"
+            placeholder="Describe what makes this place special..."
+            validators={[VALIDATOR_REQUIRE()]}
+            error="Please enter valid Description"
+            onInput={InputHandler}
+          />
+          <Input
+            id="address"
+            element="input"
+            type="text"
+            label="Address"
+            placeholder="e.g. Champ de Mars, 5 Av. Anatole France, Paris"
+            validators={[VALIDATOR_REQUIRE()]}
+            error="Please enter valid Address"
+            onInput={InputHandler}
+          />
+          <ImageUplaod center multiple id="images" onInput={InputHandler}/>
+          <Button type="submit" disabled={!formState.isValid}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Publish Place
+          </Button>
+        </form>
+      </div>
+    </PageTransition>
   );
 };
 

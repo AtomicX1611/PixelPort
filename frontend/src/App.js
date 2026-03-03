@@ -10,12 +10,17 @@ import "./App.css";
 import Users from "./user/pages/Users.js";
 import NewPlace from "./places/pages/NewPlace.js";
 import MainNavigation from "../src/shared/components/Navigation/MainNavigation.js";
+import Footer from "./shared/components/Navigation/Footer.js";
 import UserPlaces from "./places/pages/UserPlaces.js";
 import UpdatePlace from "./places/pages/Updateplace.js";
 import Auth from "./user/pages/Auth.js";
 import { AuthContext } from "./context/AuthContext.js";
+import { ThemeProvider } from "./context/ThemeContext.js";
+import { ToastProvider } from "./context/ToastContext.js";
 import Explore from "./places/pages/Explore.js";
 import PostDetail from "./places/pages/PostDetail.js";
+import ScrollToTop from "./shared/components/UiElements/ScrollToTop.js";
+import "../src/shared/components/UiElements/Toast.css";
 
 let logoutTimer;
 
@@ -98,20 +103,26 @@ const App = () => {
   }
 
   return (
-    <AuthContext.Provider
-      value={{
-        isLoggedIn: !!token,
-        token: token,
-        login: login,
-        logout: logout,
-        userId: userId,
-      }}
-    >
-      <BrowserRouter>
-        <MainNavigation />
-        <main>{routes}</main>
-      </BrowserRouter>
-    </AuthContext.Provider>
+    <ThemeProvider>
+      <ToastProvider>
+        <AuthContext.Provider
+          value={{
+            isLoggedIn: !!token,
+            token: token,
+            login: login,
+            logout: logout,
+            userId: userId,
+          }}
+        >
+          <BrowserRouter>
+            <MainNavigation />
+            <main>{routes}</main>
+            <Footer />
+            <ScrollToTop />
+          </BrowserRouter>
+        </AuthContext.Provider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 };
 

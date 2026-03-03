@@ -35,3 +35,7 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+[data-theme="dark"] .loading-spinner__overlay {
+  background: rgba(15, 23, 42, 0.85);
+}

@@ -2,3 +2,26 @@ main {
   margin-top: var(--nav-height);
   min-height: calc(100vh - var(--nav-height));
 }
+
+/* Smooth transitions for theme changes */
+body,
+.main-header,
+.side-drawer,
+.card,
+.place-form,
+.authentication-container,
+.modal {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Selection color */
+::selection {
+  background: var(--primary);
+  color: white;
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

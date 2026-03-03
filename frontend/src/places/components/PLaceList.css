@@ -18,7 +18,7 @@
 }
 
 .no-places-card {
-  background: white;
+  background: var(--surface);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   padding: 2.5rem;

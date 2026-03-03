@@ -13,7 +13,6 @@ import HttpError from "./util/http-error.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load environment variables
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
@@ -51,7 +50,6 @@ app.use((error, req, res, next) => {
     .json({ message: error.message || "Error Occurred" });
 });
 
-console.log('Attempting to connect to MongoDB...');
 mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => {

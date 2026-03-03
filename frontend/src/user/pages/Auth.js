@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext.js";
+import { ToastContext } from "../../context/ToastContext.js";
 import { useNavigate } from "react-router-dom";
 
 import { VALIDATOR_REQUIRE } from "../../shared/utils/validator.js";
@@ -11,9 +12,11 @@ import ErrorModal from "../../shared/components/UiElements/ErrorModal.js";
 import LoadingSpinner from "../../shared/components/UiElements/LoadingSpinner.js";
 import useHttpClient from "../../shared/hooks/http-hook.js";
 import ImageUplaod from "../../shared/components/FormElements/ImageUpload.js";
+import PageTransition from "../../shared/components/UiElements/PageTransition.js";
 
 const Auth = () => {
   const auth = useContext(AuthContext);
+  const { showToast } = useContext(ToastContext);
   const navigate = useNavigate();
   const [isLogin, setisLogin] = useState(false);
   const { loading, error, sendRequest, clearError } = useHttpClient();
@@ -58,11 +61,13 @@ const Auth = () => {
           }
         );
         auth.login(response.userId, response.token);
+        showToast("Welcome back!", "success");
         navigate("/");
       } catch (error) {}
     } else {
       try {
         if (!formState.inputs.image.value) {
+          showToast("Please upload a profile image", "warning");
           return;
         }
         const formData = new FormData();
@@ -76,6 +81,7 @@ const Auth = () => {
           formData
         );
         auth.login(response.userId, response.token);
+        showToast("Account created! Welcome to PixelPort!", "success");
         navigate("/");
       } catch (err) {}
     }
@@ -127,7 +133,7 @@ const Auth = () => {
   };
 
   return (
-    <>
+    <PageTransition>
       <ErrorModal error={error} onClear={clearError} />
       <div className="authentication">
         <div className="authentication-container">
@@ -221,7 +227,7 @@ const Auth = () => {
           </div>
         </div>
       </div>
-    </>
+    </PageTransition>
   );
 };
 

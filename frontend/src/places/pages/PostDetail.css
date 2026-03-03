@@ -96,7 +96,7 @@
 }
 
 .post-detail__nav:hover {
-  background: white;
+  background: var(--surface);
   transform: translateY(-50%) scale(1.05);
 }
 

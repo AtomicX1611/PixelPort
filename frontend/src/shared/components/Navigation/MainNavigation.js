@@ -1,14 +1,17 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import MainHeader from "./MainHeader.js";
 import NavLinks from "./NavLink.js";
 import SideDrawer from "./SideDrawer.js";
 import "./MainNavigation.css";
 import Backdrop from "../UiElements/Backdrop.js";
+import ThemeToggle from "../UiElements/ThemeToggle.js";
+import { ThemeContext } from "../../../context/ThemeContext.js";
 
 const MainNavigation = (props) => {
   const [drawer, setDrawer] = useState(false);
+  const { isDark, toggleTheme } = useContext(ThemeContext);
 
   const openDrawer = () => {
     setDrawer(true);
@@ -24,6 +27,10 @@ const MainNavigation = (props) => {
       <SideDrawer show={drawer} close={closeDrawer}>
         <nav className="main-navigation__drawer-nav">
           <NavLinks />
+          <div className="main-navigation__drawer-theme">
+            <span>Dark Mode</span>
+            <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
+          </div>
         </nav>
       </SideDrawer>
       <MainHeader>
@@ -40,6 +47,7 @@ const MainNavigation = (props) => {
         </h1>
         <nav className="main-navigation__header-nav">
           <NavLinks />
+          <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
         </nav>
       </MainHeader>
     </React.Fragment>
