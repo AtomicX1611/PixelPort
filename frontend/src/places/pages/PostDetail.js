@@ -18,6 +18,8 @@ const PostDetail = () => {
   const [selectedImg, setSelectedImg] = useState(0);
   const [showMap, setShowMap] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userPosts, setUserPosts] = useState([]);
+  const [explorePosts, setExplorePosts] = useState([]);
 
   useEffect(() => {
     const fetchPlace = async () => {
@@ -26,9 +28,42 @@ const PostDetail = () => {
           `http://localhost:5000/api/places/${pid}`
         );
         setPlace(data.place);
+        setSelectedImg(0);
       } catch (err) {}
     };
     fetchPlace();
+  }, [sendRequest, pid]);
+
+  // Fetch other posts by same user
+  useEffect(() => {
+    if (!place?.creatorID) return;
+    const creatorId = typeof place.creatorID === 'object' ? place.creatorID._id : place.creatorID;
+    const fetchUserPosts = async () => {
+      try {
+        const data = await sendRequest(
+          `http://localhost:5000/api/places/user/${creatorId}`
+        );
+        const others = (data.places || []).filter(
+          (p) => (p._id || p.id) !== pid
+        );
+        setUserPosts(others.slice(0, 6));
+      } catch (err) {}
+    };
+    fetchUserPosts();
+  }, [sendRequest, place?.creatorID, pid]);
+
+  // Fetch explore / related posts
+  useEffect(() => {
+    const fetchExplorePosts = async () => {
+      try {
+        const data = await sendRequest(
+          `http://localhost:5000/api/places/images?page=1&limit=7`
+        );
+        const others = (data.posts || []).filter((p) => p.id !== pid);
+        setExplorePosts(others.slice(0, 6));
+      } catch (err) {}
+    };
+    fetchExplorePosts();
   }, [sendRequest, pid]);
 
   const confirmDeleteHandler = async () => {
@@ -238,6 +273,141 @@ const PostDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* More from this user */}
+      {userPosts.length > 0 && (
+        <section className="post-detail__section">
+          <div className="post-detail__section-header">
+            <h2>
+              More from{" "}
+              {place.creatorID && typeof place.creatorID === "object"
+                ? place.creatorID.name
+                : "this user"}
+            </h2>
+            {place.creatorID && (
+              <Link
+                to={`/${
+                  typeof place.creatorID === "object"
+                    ? place.creatorID._id
+                    : place.creatorID
+                }/places`}
+                className="post-detail__section-link"
+              >
+                View all
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            )}
+          </div>
+          <div className="post-detail__related-grid">
+            {userPosts.map((p) => {
+              const imgs = p.images || (p.imageUrl ? [p.imageUrl] : []);
+              return (
+                <Link
+                  to={`/post/${p._id || p.id}`}
+                  className="post-detail__related-card"
+                  key={p._id || p.id}
+                >
+                  <div className="post-detail__related-img">
+                    {imgs[0] ? (
+                      <img
+                        src={`http://localhost:5000/${imgs[0]}`}
+                        alt={p.title}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="post-detail__related-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                    )}
+                    {imgs.length > 1 && (
+                      <span className="post-detail__related-count">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="12" height="12">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {imgs.length}
+                      </span>
+                    )}
+                  </div>
+                  <div className="post-detail__related-body">
+                    <h3>{p.title}</h3>
+                    {p.address && <span className="post-detail__related-address">{p.address}</span>}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* You might also like */}
+      {explorePosts.length > 0 && (
+        <section className="post-detail__section">
+          <div className="post-detail__section-header">
+            <h2>You might also like</h2>
+            <Link to="/explore" className="post-detail__section-link">
+              Explore all
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+          <div className="post-detail__related-grid">
+            {explorePosts.map((p) => (
+              <Link
+                to={`/post/${p.id}`}
+                className="post-detail__related-card"
+                key={p.id}
+              >
+                <div className="post-detail__related-img">
+                  {p.thumbnail ? (
+                    <img
+                      src={`http://localhost:5000/${p.thumbnail}`}
+                      alt={p.title}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="post-detail__related-placeholder">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
+                  {p.imageCount > 1 && (
+                    <span className="post-detail__related-count">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="12" height="12">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {p.imageCount}
+                    </span>
+                  )}
+                </div>
+                <div className="post-detail__related-body">
+                  <h3>{p.title}</h3>
+                  {p.creator && (
+                    <div className="post-detail__related-creator">
+                      {p.creator.image ? (
+                        <img
+                          src={`http://localhost:5000/${p.creator.image}`}
+                          alt={p.creator.name}
+                        />
+                      ) : (
+                        <div className="post-detail__related-avatar-placeholder">
+                          {p.creator.name?.charAt(0)?.toUpperCase()}
+                        </div>
+                      )}
+                      <span>{p.creator.name}</span>
+                    </div>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };
