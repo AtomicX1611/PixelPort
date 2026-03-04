@@ -258,20 +258,19 @@ const getAllImages = async (req, res, next) => {
         if (geocodeResult) {
           // Earth radius ≈ 6378.1 km → radians = km / 6378.1
           const radiusInRadians = radiusKm / 6378.1;
+          // When proximity is enabled, use ONLY the geo filter.
+          // The search term is the location to geocode — not a title filter.
+          // Using $or previously caused title-matched results (regardless of
+          // distance) to leak into the geo results.
           filter = {
-            $or: [
-              titleFilter,
-              {
-                geoLocation: {
-                  $geoWithin: {
-                    $centerSphere: [
-                      [geocodeResult.lng, geocodeResult.lat],
-                      radiusInRadians,
-                    ],
-                  },
-                },
+            geoLocation: {
+              $geoWithin: {
+                $centerSphere: [
+                  [geocodeResult.lng, geocodeResult.lat],
+                  radiusInRadians,
+                ],
               },
-            ],
+            },
           };
         } else {
           // Geocoding failed – fall back to title-only search

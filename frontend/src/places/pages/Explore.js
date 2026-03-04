@@ -163,3 +163,8 @@ const Explore = () => {
 };
 
 export default Explore;
+
+//Eiffel tower -> lat 51 , long 0.13
+//two units beside london -> lat 53, long 0.13
+//ten units beside london -> lat 61, long 0.13
+//twenty units beside london -> lat 75, long 0.13
