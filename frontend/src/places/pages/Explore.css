@@ -104,6 +104,74 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
+/* ===== PROXIMITY FILTER ===== */
+.explore-proximity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  margin-top: 0.875rem;
+}
+
+.explore-proximity__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.explore-proximity__toggle:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #d1d5db;
+}
+
+.explore-proximity__toggle.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.explore-proximity__radius {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-full);
+  background: var(--surface-dark-alt);
+  color: white;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  padding-right: 2rem;
+}
+
+.explore-proximity__radius:focus {
+  border-color: var(--primary);
+}
+
+.explore-hero__proximity-info {
+  color: #9ca3af;
+}
+
+.explore-hero__proximity-info strong {
+  color: var(--primary);
+}
+
 /* ===== CONTENT AREA ===== */
 .explore-content {
   max-width: 1200px;

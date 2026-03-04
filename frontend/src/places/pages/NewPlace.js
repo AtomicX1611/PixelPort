@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./NewPlace.css";
 import { useForm } from "../../shared/hooks/form-hook.js";
-import { VALIDATOR_REQUIRE } from "../../shared/utils/validator.js";
+import { VALIDATOR_REQUIRE, VALIDATOR_MIN, VALIDATOR_MAX } from "../../shared/utils/validator.js";
 import useHttpClient from "../../shared/hooks/http-hook.js";
 import { AuthContext } from "../../context/AuthContext.js";
 import { ToastContext } from "../../context/ToastContext.js";
@@ -21,6 +21,8 @@ const NewPlace = () => {
     title: { value: "", isValid: false },
     description: { value: "", isValid: false },
     address: { value: "", isValid: false },
+    latitude: { value: "", isValid: false },
+    longitude: { value: "", isValid: false },
     images: { value: [], isValid: false },
   });
 
@@ -41,7 +43,10 @@ const NewPlace = () => {
       for (const file of imageFiles) {
         formData.append("images", file);
       }
-      formData.append("location", JSON.stringify({ lng: 74.001, lat: 40.712 }));
+      formData.append("location", JSON.stringify({
+        lat: parseFloat(formState.inputs.latitude.value),
+        lng: parseFloat(formState.inputs.longitude.value),
+      }));
       formData.append("pid", "100");
 
       await sendRequest(
@@ -99,6 +104,28 @@ const NewPlace = () => {
             error="Please enter valid Address"
             onInput={InputHandler}
           />
+          <div className="place-form__coords">
+            <Input
+              id="latitude"
+              element="input"
+              type="number"
+              label="Latitude"
+              placeholder="e.g. 48.8584"
+              validators={[VALIDATOR_REQUIRE(), VALIDATOR_MIN(-90), VALIDATOR_MAX(90)]}
+              error="Enter a valid latitude (-90 to 90)"
+              onInput={InputHandler}
+            />
+            <Input
+              id="longitude"
+              element="input"
+              type="number"
+              label="Longitude"
+              placeholder="e.g. 2.2945"
+              validators={[VALIDATOR_REQUIRE(), VALIDATOR_MIN(-180), VALIDATOR_MAX(180)]}
+              error="Enter a valid longitude (-180 to 180)"
+              onInput={InputHandler}
+            />
+          </div>
           <ImageUplaod center multiple id="images" onInput={InputHandler}/>
           <Button type="submit" disabled={!formState.isValid}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">

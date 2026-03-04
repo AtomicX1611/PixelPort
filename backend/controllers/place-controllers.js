@@ -4,6 +4,7 @@ import User from "../model/user.js";
 import fs from "fs";
 import HttpError from "../util/http-error.js";
 import { getCache, setCache, deleteCacheByPrefix } from "../util/cache.js";
+import geocodeAddress from "../util/geocode.js";
 
 // Helper to shape post responses consistently for Explore/listing pages
 const buildPostsResponse = (places, page, limit, totalPlaces) => {
@@ -233,8 +234,10 @@ const getAllImages = async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 12;
   const search = req.query.search ? req.query.search.trim() : '';
+  const proximity = req.query.proximity === 'true';
+  const radiusKm = parseInt(req.query.radius) || 100;
   const skipIndex = (page - 1) * limit;
-  const cacheKey = `images:page=${page}:limit=${limit}:search=${search}`;
+  const cacheKey = `images:page=${page}:limit=${limit}:search=${search}:prox=${proximity}:rad=${radiusKm}`;
 
   const cached = await getCache(cacheKey);
   if (cached) {
@@ -242,12 +245,45 @@ const getAllImages = async (req, res, next) => {
   }
 
   try {
-    const filter = search
-      ? { title: { $regex: search, $options: 'i' } }
-      : {};
+    let filter = {};
+    let geocodeResult = null;
+
+    if (search) {
+      const titleFilter = { title: { $regex: search, $options: 'i' } };
+
+      if (proximity) {
+        // Geocode the search term to get coordinates
+        geocodeResult = await geocodeAddress(search);
+
+        if (geocodeResult) {
+          // Earth radius ≈ 6378.1 km → radians = km / 6378.1
+          const radiusInRadians = radiusKm / 6378.1;
+          filter = {
+            $or: [
+              titleFilter,
+              {
+                geoLocation: {
+                  $geoWithin: {
+                    $centerSphere: [
+                      [geocodeResult.lng, geocodeResult.lat],
+                      radiusInRadians,
+                    ],
+                  },
+                },
+              },
+            ],
+          };
+        } else {
+          // Geocoding failed – fall back to title-only search
+          filter = titleFilter;
+        }
+      } else {
+        filter = titleFilter;
+      }
+    }
 
     const places = await Place.find(filter)
-      .select('title desc images creatorID address')
+      .select('title desc images creatorID address location')
       .populate('creatorID', 'name image')
       .sort({ _id: -1 })
       .skip(skipIndex)
@@ -256,6 +292,16 @@ const getAllImages = async (req, res, next) => {
 
     const totalPlaces = await Place.countDocuments(filter);
     const response = buildPostsResponse(places, page, limit, totalPlaces);
+
+    // Attach proximity metadata so the frontend can show context
+    if (proximity && geocodeResult) {
+      response.proximityCenter = {
+        lat: geocodeResult.lat,
+        lng: geocodeResult.lng,
+        name: geocodeResult.displayName,
+      };
+      response.radiusKm = radiusKm;
+    }
 
     await setCache(cacheKey, response, 120);
     return res.json(response);

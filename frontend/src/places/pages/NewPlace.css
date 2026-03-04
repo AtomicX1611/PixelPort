@@ -76,4 +76,18 @@
   .new-place-page {
     padding: 1.5rem 1rem 3rem;
   }
+
+  .place-form__coords {
+    flex-direction: column;
+  }
+}
+
+.place-form__coords {
+  display: flex;
+  gap: 1rem;
+}
+
+.place-form__coords > * {
+  flex: 1;
+  min-width: 0;
 }
