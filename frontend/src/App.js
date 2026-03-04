@@ -20,6 +20,7 @@ import { ToastProvider } from "./context/ToastContext.js";
 import Explore from "./places/pages/Explore.js";
 import PostDetail from "./places/pages/PostDetail.js";
 import ScrollToTop from "./shared/components/UiElements/ScrollToTop.js";
+import RouteScrollToTop from "./shared/components/UiElements/RouteScrollToTop.js";
 import "../src/shared/components/UiElements/Toast.css";
 
 let logoutTimer;
@@ -115,6 +116,7 @@ const App = () => {
           }}
         >
           <BrowserRouter>
+            <RouteScrollToTop />
             <MainNavigation />
             <main>{routes}</main>
             <Footer />
