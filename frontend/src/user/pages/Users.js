@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import UserList from "../components/UserList";
 import "../components/UserList.css";
 import usehttpClient from "../../shared/hooks/http-hook.js";
@@ -15,7 +15,7 @@ const Users = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const { loading, error, sendRequest, clearError } = usehttpClient();
 
-  const fetchUsers = async (pageNumber) => {
+  const fetchUsers = useCallback(async (pageNumber) => {
     try {
       setIsInitialLoad(true);
       const response = await sendRequest(
@@ -35,10 +35,9 @@ const Users = () => {
       setHasMore(newUsers.length === 16);
       setIsInitialLoad(false);
     } catch (err) {
-      console.error(err);
       setIsInitialLoad(false);
     }
-  };
+  }, [sendRequest, searchTerm, activeFilter, auth.isLoggedIn, auth.userId]);
 
   useEffect(() => {
     setPage(1);
@@ -46,17 +45,13 @@ const Users = () => {
       fetchUsers(1);
     }, 400);
     return () => clearTimeout(timer);
-  }, [searchTerm, activeFilter, auth.isLoggedIn]);
+  }, [fetchUsers]);
 
   useEffect(() => {
     if (page > 1) {
       fetchUsers(page);
     }
-  }, [page]);
-
-  useEffect(() => {
-    fetchUsers(1);
-  }, [auth.isLoggedIn]);
+  }, [page, fetchUsers]);
 
   const handleLoadMore = () => {
     if (!loading && hasMore) {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams} from "react-router-dom";
 import PlaceList from "../components/PlaceList";
 import useHttpClient from "../../shared/hooks/http-hook.js";
 import LoadingSpinner from "../../shared/components/UiElements/LoadingSpinner.js";
@@ -11,7 +11,7 @@ const UserPlaces = () => {
 
   const [places, setPlaces] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
-  const { loading, sendRequest } = useHttpClient();
+const { loading, sendRequest } = useHttpClient();
 
   useEffect(() => {
     const fetchPlaces = async () => {
