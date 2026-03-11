@@ -17,7 +17,7 @@ const UserPlaces = () => {
     const fetchPlaces = async () => {
       try {
         const response = await sendRequest(
-          `http://localhost:5000/api/places/user/${userID}`
+          `${process.env.REACT_APP_API_URL}/api/places/user/${userID}`
         );
         setPlaces(response.places || []);
       } catch (err) {}
@@ -31,7 +31,7 @@ const UserPlaces = () => {
     const fetchUserInfo = async () => {
       try {
         const response = await sendRequest(
-          `http://localhost:5000/api/users?page=1&limit=100`
+          `${process.env.REACT_APP_API_URL}/api/users?page=1&limit=100`
         );
         const users = response.message || [];
         const user = users.find((u) => u._id === userID);
@@ -57,7 +57,7 @@ const UserPlaces = () => {
               <>
                 <div className="user-places-profile__avatar">
                   <img
-                    src={`http://localhost:5000/${userInfo.image}`}
+                    src={`${process.env.REACT_APP_API_URL}/${userInfo.image}`}
                     alt={userInfo.name}
                     onError={(e) => {
                       e.target.src = "/default-avatar.png";

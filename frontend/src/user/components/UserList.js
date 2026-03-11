@@ -19,7 +19,7 @@ const UserList = (props) => {
         > 
           <div className="user-card__avatar">
             <img
-              src={`http://localhost:5000/${user.image}`}
+              src={`${process.env.REACT_APP_API_URL}/${user.image}`}
               alt={`${user.name || "User"}'s profile`}
               onError={(e) => {
                 e.target.src = '/default-avatar.png'; 

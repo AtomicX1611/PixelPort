@@ -17,10 +17,16 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 
+// Ensure uploads directory exists (Railway has ephemeral filesystem)
+const uploadsDir = path.join(__dirname, "uploads", "images");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 app.use(cors());
 
 app.use(express.json());
-app.use("/uploads/images", express.static(path.join("uploads", "images")));
+app.use("/uploads/images", express.static(path.join(__dirname, "uploads", "images")));
 
 app.use("/api/places", placeRouter);
 app.use("/api/users", userRouter);
@@ -54,7 +60,7 @@ mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => {
     const port = process.env.PORT || 5000;
-    app.listen(port);
+    app.listen(port, '0.0.0.0');
     console.log(`Server successfully connected to MongoDB and started on port ${port}`);
   })
   .catch((error) => {

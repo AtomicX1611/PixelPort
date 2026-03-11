@@ -47,7 +47,7 @@ const Explore = () => {
           ? `&proximity=true&radius=${radius}`
           : "";
       const responseData = await sendRequest(
-        `http://localhost:5000/api/places/images?page=${page}&limit=12${searchParam}${proximityParam}`
+        `${process.env.REACT_APP_API_URL}/api/places/images?page=${page}&limit=12${searchParam}${proximityParam}`
       );
       setPosts((prev) => {
         if (page === 1) return responseData.posts;

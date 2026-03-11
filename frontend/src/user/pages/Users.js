@@ -19,7 +19,7 @@ const Users = () => {
     try {
       setIsInitialLoad(true);
       const response = await sendRequest(
-        `http://localhost:5000/api/users?page=${pageNumber}&limit=16${searchTerm ? `&search=${searchTerm}` : ''}${activeFilter !== 'all' ? `&filter=${activeFilter}` : ''}`
+        `${process.env.REACT_APP_API_URL}/api/users?page=${pageNumber}&limit=16${searchTerm ? `&search=${searchTerm}` : ''}${activeFilter !== 'all' ? `&filter=${activeFilter}` : ''}`
       );
       const newUsers = response.message || [];
       

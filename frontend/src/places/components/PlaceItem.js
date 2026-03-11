@@ -39,7 +39,7 @@ const PlaceItem = (props) => {
     setShowConfirmModal(false);
     try {
       await sendRequest(
-        `http://localhost:5000/api/places/${props.id}`,
+        `${process.env.REACT_APP_API_URL}/api/places/${props.id}`,
         'DELETE',
         null,
         {
@@ -85,7 +85,7 @@ const PlaceItem = (props) => {
         <Card className="place-item__content">
           <Link to={`/post/${props.id}`} className="place-item__link">
             <div className="place-item__image">
-              <img src={`http://localhost:5000/${thumbnail}`} alt={props.title} />
+              <img src={`${process.env.REACT_APP_API_URL}/${thumbnail}`} alt={props.title} />
               {images.length > 1 && (
                 <span className="place-item__img-count">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">

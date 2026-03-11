@@ -25,7 +25,7 @@ const PostDetail = () => {
     const fetchPlace = async () => {
       try {
         const data = await sendRequest(
-          `http://localhost:5000/api/places/${pid}`
+          `${process.env.REACT_APP_API_URL}/api/places/${pid}`
         );
         setPlace(data.place);
         setSelectedImg(0);
@@ -41,7 +41,7 @@ const PostDetail = () => {
     const fetchUserPosts = async () => {
       try {
         const data = await sendRequest(
-          `http://localhost:5000/api/places/user/${creatorId}`
+          `${process.env.REACT_APP_API_URL}/api/places/user/${creatorId}`
         );
         const others = (data.places || []).filter(
           (p) => (p._id || p.id) !== pid
@@ -57,7 +57,7 @@ const PostDetail = () => {
     const fetchExplorePosts = async () => {
       try {
         const data = await sendRequest(
-          `http://localhost:5000/api/places/images?page=1&limit=7`
+          `${process.env.REACT_APP_API_URL}/api/places/images?page=1&limit=7`
         );
         const others = (data.posts || []).filter((p) => p.id !== pid);
         setExplorePosts(others.slice(0, 6));
@@ -70,7 +70,7 @@ const PostDetail = () => {
     setShowDeleteModal(false);
     try {
       await sendRequest(
-        `http://localhost:5000/api/places/${pid}`,
+        `${process.env.REACT_APP_API_URL}/api/places/${pid}`,
         "DELETE",
         null,
         { Authorization: "Bearer " + auth.token }
@@ -149,7 +149,7 @@ const PostDetail = () => {
           <div className="post-detail__main-image">
             {images.length > 0 ? (
               <img
-                src={`http://localhost:5000/${images[selectedImg]}`}
+                src={`${process.env.REACT_APP_API_URL}/${images[selectedImg]}`}
                 alt={`${place.title} - ${selectedImg + 1}`}
               />
             ) : (
@@ -192,7 +192,7 @@ const PostDetail = () => {
                   onClick={() => setSelectedImg(i)}
                 >
                   <img
-                    src={`http://localhost:5000/${img}`}
+                    src={`${process.env.REACT_APP_API_URL}/${img}`}
                     alt={`Thumb ${i + 1}`}
                   />
                 </button>
@@ -209,7 +209,7 @@ const PostDetail = () => {
             <div className="post-detail__creator">
               {place.creatorID.image ? (
                 <img
-                  src={`http://localhost:5000/${place.creatorID.image}`}
+                  src={`${process.env.REACT_APP_API_URL}/${place.creatorID.image}`}
                   alt={place.creatorID.name}
                   className="post-detail__avatar"
                 />
@@ -312,7 +312,7 @@ const PostDetail = () => {
                   <div className="post-detail__related-img">
                     {imgs[0] ? (
                       <img
-                        src={`http://localhost:5000/${imgs[0]}`}
+                        src={`${process.env.REACT_APP_API_URL}/${imgs[0]}`}
                         alt={p.title}
                         loading="lazy"
                       />
@@ -365,7 +365,7 @@ const PostDetail = () => {
                 <div className="post-detail__related-img">
                   {p.thumbnail ? (
                     <img
-                      src={`http://localhost:5000/${p.thumbnail}`}
+                      src={`${process.env.REACT_APP_API_URL}/${p.thumbnail}`}
                       alt={p.title}
                       loading="lazy"
                     />
@@ -391,7 +391,7 @@ const PostDetail = () => {
                     <div className="post-detail__related-creator">
                       {p.creator.image ? (
                         <img
-                          src={`http://localhost:5000/${p.creator.image}`}
+                          src={`${process.env.REACT_APP_API_URL}/${p.creator.image}`}
                           alt={p.creator.name}
                         />
                       ) : (

@@ -10,7 +10,7 @@ const ExploreCard = forwardRef(({ post }, ref) => {
     >
       <div className="explore-card__image">
         <img
-          src={`http://localhost:5000/${post.thumbnail}`}
+          src={`${process.env.REACT_APP_API_URL}/${post.thumbnail}`}
           alt={post.title}
           loading="lazy"
         />
@@ -44,7 +44,7 @@ const ExploreCard = forwardRef(({ post }, ref) => {
           <div className="explore-card__creator">
             {post.creator.image ? (
               <img
-                src={`http://localhost:5000/${post.creator.image}`}
+                src={`${process.env.REACT_APP_API_URL}/${post.creator.image}`}
                 alt={post.creator.name}
                 className="explore-card__avatar"
               />
