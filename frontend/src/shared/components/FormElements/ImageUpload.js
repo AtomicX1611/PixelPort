@@ -7,7 +7,6 @@ const ImageUplaod = (props) => {
   const filePickerRef = useRef();
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
-  const [isValid, setIsValid] = useState(false);
   const multiple = props.multiple || false;
 
   const pickImageHandler = () => {
@@ -37,14 +36,12 @@ const ImageUplaod = (props) => {
   const pickedHandler = (event) => {
     const picked = event.target.files;
     if (!picked || picked.length === 0) {
-      setIsValid(false);
       props.onInput(props.id, multiple ? [] : null, false);
       return;
     }
 
     const fileArray = Array.from(picked);
     setFiles(fileArray);
-    setIsValid(true);
     props.onInput(props.id, multiple ? fileArray : fileArray[0], true);
   };
 
@@ -52,7 +49,6 @@ const ImageUplaod = (props) => {
     const updated = files.filter((_, i) => i !== index);
     setFiles(updated);
     const valid = updated.length > 0;
-    setIsValid(valid);
     props.onInput(props.id, multiple ? updated : updated[0] || null, valid);
   };
 
