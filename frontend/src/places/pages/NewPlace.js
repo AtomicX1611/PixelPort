@@ -50,7 +50,7 @@ const NewPlace = () => {
       formData.append("pid", "100");
 
       await sendRequest(
-        ${process.env.REACT_APP_API_URL}/api/places/,
+        `${process.env.REACT_APP_API_URL}/api/places/`,
         "POST",
         formData,
         {
